@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, inspect
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from .engine import engine
+from .session import Session
 
 
 class _Base:
@@ -18,6 +19,29 @@ class _Base:
         for name in inspect(self.__class__).columns.keys():
             strings.append(f'{name}={getattr(self, name)}')
         return res + ', '.join(strings) + ')'
+
+    @classmethod
+    def count(cls):
+        return Session.query(cls).count()
+
+    @classmethod
+    def query(cls, *args, **kwargs):
+        """Perform a query against this class."""
+        return Session.query(cls).filter(*args).filter_by(**kwargs)
+
+    @classmethod
+    def first(cls):
+        return cls.query().first()
+
+    @classmethod
+    def join(cls, *args, **kwargs):
+        """Return a query object with a join."""
+        return Session.query(cls).join(*args, **kwargs)
+
+    @classmethod
+    def get(cls, id):
+        """Return a row with the exact id."""
+        return Session.query(cls).get(id)
 
 
 Base = declarative_base(bind=engine, cls=_Base)
@@ -39,6 +63,10 @@ class DescriptionMixin:
         self._description = value or None
 
 
+class NameDescriptionMixin(NameMixin, DescriptionMixin):
+    pass
+
+
 class LocationMixin:
     @declared_attr
     def location_id(cls):
@@ -46,7 +74,9 @@ class LocationMixin:
 
     @declared_attr
     def location(cls):
-        return relationship('Room', backref=cls.__tablename__)
+        return relationship(
+            'Room', backref=cls.__tablename__, foreign_keys=[cls.location_id]
+        )
 
 
 class PasswordMixin:
