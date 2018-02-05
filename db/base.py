@@ -1,7 +1,9 @@
 """Provides base classes and mixins."""
 
 from passlib.hash import sha256_crypt as crypt
-from sqlalchemy import Column, Integer, String, ForeignKey, inspect
+from sqlalchemy import (
+    Column, Integer, String, ForeignKey, inspect, DateTime, func
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from .engine import engine
@@ -12,6 +14,9 @@ class _Base:
     """The base class for declarative."""
 
     id = Column(Integer, primary_key=True)
+    created = Column(
+        DateTime(timezone=True), nullable=False, default=func.now()
+    )
 
     def __repr__(self):
         res = f'{self.__class__.__name__} ('
@@ -70,7 +75,7 @@ class NameDescriptionMixin(NameMixin, DescriptionMixin):
 class LocationMixin:
     @declared_attr
     def location_id(cls):
-        return Column(Integer, ForeignKey('rooms.id'), nullable=False)
+        return Column(Integer, ForeignKey('rooms.id'), nullable=True)
 
     @declared_attr
     def location(cls):
@@ -119,10 +124,9 @@ class StatisticsMixin:
     max_hitpoints = Column(Integer, nullable=False, default=0)
     max_mana = Column(Integer, nullable=False, default=0)
     max_endurance = Column(Integer, nullable=False, default=0)
-    strength = Column(Integer, nullable=False, default=0)
-    dexterity = Column(Integer, nullable=False, default=0)
+    damage = Column(Integer, nullable=False, default=0)
+    avoid = Column(Integer, nullable=False, default=0)
     constitution = Column(Integer, nullable=False, default=0)
     charisma = Column(Integer, nullable=False, default=0)
-    wisdom = Column(Integer, nullable=False, default=0)
     divinity = Column(Integer, nullable=False, default=0)
     magic = Column(Integer, nullable=False, default=0)

@@ -1,9 +1,9 @@
-"""Provides the Player class."""
+"""Provides the Character class."""
 
 from sqlalchemy import Column, Boolean, Integer
 from .base import (
-    Base, NameMixin, DescriptionMixin, PasswordMixin, ExperienceMixin,
-    LevelMixin, LocationMixin, StatisticsMixin
+    Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
+    LocationMixin, StatisticsMixin
 )
 
 
@@ -29,13 +29,13 @@ class StatProperty(property):
         setattr(instance, self.name, value)
 
 
-class Player(
-    Base, NameMixin, DescriptionMixin, PasswordMixin, ExperienceMixin,
-    LevelMixin, LocationMixin, StatisticsMixin
+class Character(
+    Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
+    LocationMixin, StatisticsMixin
 ):
     """A player instance."""
 
-    __tablename__ = 'players'
+    __tablename__ = 'characters'
     builder = Column(Boolean, nullable=False, default=False)
     admin = Column(Boolean, nullable=False, default=False)
     mobile = Column(Boolean, nullable=False, default=False)
@@ -45,4 +45,4 @@ class Player(
 
 
 for name in ('hitpoints', 'mana', 'endurance'):
-    setattr(Player, name[0], StatProperty(name))
+    setattr(Character, name[0], StatProperty(name))

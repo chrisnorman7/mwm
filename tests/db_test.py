@@ -1,31 +1,31 @@
 """Boring database tests."""
 
-from db import Room, Player, session, Door
+from db import Room, Character, session, Door, Object
 
 
 with session() as s:
     r = Room(name='Test Room')
-    p = Player(name='Test Player', location=r)
-    s.add_all((p, r))
+    c = Character(name='Test Player', location=r)
+    s.add_all((c, r))
     s.commit()
     rid = r.id
-    pid = p.id
+    cid = c.id
 
 
 def test_location_ids():
-    p = Player.get(pid)
-    assert p.location_id == rid
+    c = Character.get(cid)
+    assert c.location_id == rid
 
 
 def test_stats():
-    p = Player.get(pid)
-    p.max_hitpoints = 50
-    assert p.h == p.max_hitpoints
-    p.h = 5
-    assert p.h == 5
-    assert p.max_hitpoints == 50
-    p.h = p.max_hitpoints
-    assert p.hitpoints is None
+    c = Character.get(cid)
+    c.max_hitpoints = 50
+    assert c.h == c.max_hitpoints
+    c.h = 5
+    assert c.h == 5
+    assert c.max_hitpoints == 50
+    c.h = c.max_hitpoints
+    assert c.hitpoints is None
 
 
 def test_door():
@@ -34,3 +34,24 @@ def test_door():
         s.add(d)
         s.commit()
         assert d.target is None
+
+
+def test_object():
+    with session() as s:
+        o = Object(name='Test Object')
+        s.add(o)
+        s.commit()
+        assert o.inside is None
+        assert o.parent is None
+
+
+def test_container():
+    with session() as s:
+        c = Object(container=True, name='Test Container')
+        s.add(c)
+        s.commit()
+        o = Object(inside_id=c.id, name='Test Object inside Something Else')
+        s.add(o)
+        s.commit()
+        assert o.inside is c
+        assert o in c.contains

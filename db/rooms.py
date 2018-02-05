@@ -12,6 +12,7 @@ class Room(Base, NameDescriptionMixin):
     lit = Column(Boolean, nullable=False, default=True)
     safe = Column(Boolean, nullable=False, default=False)
     regain = Column(Integer, nullable=False, default=1)
+    arrive_msg = Column(String(150), nullable=False, default='%1n arrives.')
 
 
 class Door(Base, NameDescriptionMixin, LocationMixin):
