@@ -17,6 +17,15 @@ class Config:
     interface = attrib(default=Factory(lambda: '0.0.0.0'))
     motd = attrib(default=Factory(lambda: 'Message of the day goes here'))
     db_file = attrib(default=Factory(lambda: 'world.yaml'))
+    new_character_command = attrib(default=Factory(lambda: 'new'))
+    command_substitutions = attrib(
+        default=Factory(
+            lambda: {
+                "'": 'say ',
+                ':': 'emote '
+            }
+        )
+    )
 
     @classmethod
     def load(cls, filename):

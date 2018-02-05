@@ -11,8 +11,8 @@ class Say(Command):
         super().__init__()
         self.add_argument('what', nargs='*', help='What to say')
 
-    def func(self, connection, args):
+    def func(self, character, args):
         if not args.what:
-            connection.notify('You say nothing.')
+            character.notify('You say nothing.')
         else:
-            connection.notify('You say: %s' % args.what)
+            character.do_social('%1n say%1s: "{text}"', text=self.rest)

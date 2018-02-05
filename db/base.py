@@ -1,8 +1,9 @@
 """Provides base classes and mixins."""
 
 from passlib.hash import sha256_crypt as crypt
+from random_password import random_password
 from sqlalchemy import (
-    Column, Integer, String, ForeignKey, inspect, DateTime, func
+    Column, Integer, String, ForeignKey, inspect, DateTime, func, Boolean
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
@@ -17,6 +18,9 @@ class _Base:
     created = Column(
         DateTime(timezone=True), nullable=False, default=func.now()
     )
+
+    def notify(self):
+        """Overridden for Character instances."""
 
     def __repr__(self):
         res = f'{self.__class__.__name__} ('
@@ -111,6 +115,12 @@ class PasswordMixin:
         """Effectively lock the account."""
         self.password = None
 
+    def randomise_password(self):
+        """Set a random password for this character."""
+        pwd = random_password()
+        self.set_password(pwd)
+        return pwd
+
 
 class ExperienceMixin:
     experience = Column(Integer, nullable=False, default=0)
@@ -130,3 +140,7 @@ class StatisticsMixin:
     charisma = Column(Integer, nullable=False, default=0)
     divinity = Column(Integer, nullable=False, default=0)
     magic = Column(Integer, nullable=False, default=0)
+
+
+class InvisibleMixin:
+    invisible = Column(Boolean, nullable=False, default=False)

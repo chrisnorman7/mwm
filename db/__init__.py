@@ -5,7 +5,6 @@ import os
 from inspect import isclass
 from sqlalchemy import inspect
 from yaml import load, dump
-from random_password import random_password
 from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
 from .session import Session, session
@@ -91,8 +90,7 @@ def finalise_db():
             c = Character(
                 builder=True, admin=True, name='Wizard', location_id=r.id
             )
-            password = random_password()
-            c.set_password(password)
+            password = c.randomise_password()
             logger.info(
                 'Created default character "%s" with password %s.', c.name,
                 password

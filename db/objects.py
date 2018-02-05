@@ -3,7 +3,8 @@
 from sqlalchemy import Column, String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import (
-    Base, NameMixin, NameDescriptionMixin, LocationMixin, StatisticsMixin
+    Base, NameMixin, NameDescriptionMixin, LocationMixin, StatisticsMixin,
+    InvisibleMixin
 )
 
 
@@ -13,7 +14,9 @@ class WearPosition(Base, NameMixin):
     __tablename__ = 'wear_positions'
 
 
-class Object(Base, NameDescriptionMixin, LocationMixin, StatisticsMixin):
+class Object(
+    Base, NameDescriptionMixin, LocationMixin, StatisticsMixin, InvisibleMixin
+):
     """An object lying on the ground."""
 
     __tablename__ = 'objects'

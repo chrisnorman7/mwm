@@ -1,10 +1,31 @@
 """Provides the Protocol class for communicating with clients."""
 
 import logging
+import sys
+from inspect import isclass
+from sqlalchemy import func
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
-from db import Character
+import commands
+from commands.base import Command
+from db import Character, session
 from config import config
+
+encoding = sys.getdefaultencoding()
+logger = logging.getLogger(__name__)
+
+commands_table = {}
+
+logger.info('Building commands table...')
+for x in dir(commands):
+    cls = getattr(commands, x)
+    if isclass(cls) and issubclass(cls, Command):
+        cmd = cls()
+        for alias in set([cmd.prog] + cmd.aliases):
+            alias = alias.lower()
+            logger.debug('%s => %r.', alias, cmd)
+            commands_table[alias] = cmd
+logger.info('Commands loaded: %d.', len(commands_table))
 
 
 class Protocol(LineReceiver):
@@ -22,6 +43,8 @@ class Protocol(LineReceiver):
     def connectionLost(self, reason):
         self.logger.info(reason.getErrorMessage())
         self.factory.connections.remove(self)
+        if self.object is not None:
+            self.object.connection = None
 
     @property
     def object(self):
@@ -39,6 +62,60 @@ class Protocol(LineReceiver):
     def notify(self, string):
         """Send a string of text to this connection."""
         self.sendLine(string.encode())
+
+    def lineReceived(self, line):
+        """A line was received."""
+        line = line.decode(encoding, 'replace')
+        if self.username is None:
+            self.username = line.lower()
+            if line == config.new_character_command:
+                msg = 'Enter a name for your new character:'
+            else:
+                msg = 'Password:'
+            self.notify(msg)
+        elif self.object is None:
+            if self.username == config.new_character_command:
+                if Character.query(func.lower(Character.name) == line).count():
+                    return self.notify(
+                        'That character name is taken. Please choose another.'
+                    )
+                elif not line:
+                    self.notify('Character names cannot be blank. Goodbye.')
+                    return self.transport.loseConnection()
+                else:
+                    with session() as s:
+                        c = Character(name=line.title())
+                        s.add(c)
+                        s.commit()
+                        self.object = c
+                        self.notify(
+                            f'Your new password is {c.randomise_password()}.'
+                        )
+            else:
+                c = Character.query(
+                    func.lower(Character.name) == self.username
+                ).first()
+                if c is None or not c.check_password(line):
+                    self.notify('Incorrect password.')
+                    self.username = None
+                    return self.notify('Username:')
+                else:
+                    self.object = c
+            # All checks should have been performed now. Let's tell the user
+            # where they are.
+            self.object.show_location()
+        else:
+            if line:
+                if line[0] in config.command_substitutions:
+                    line = config.command_substitutions[line[0]] + line[1:]
+                line = line.split(' ', 1)
+                if len(line) == 1:
+                    line.append('')
+                command, rest = line
+                if command in commands_table:
+                    commands_table[command].run(self.object, rest)
+                else:
+                    self.notify("I don't understand that.")
 
 
 class Factory(ServerFactory):

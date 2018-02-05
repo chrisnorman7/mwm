@@ -3,8 +3,9 @@
 from sqlalchemy import Column, Boolean, Integer
 from .base import (
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
-    LocationMixin, StatisticsMixin
+    LocationMixin, StatisticsMixin, InvisibleMixin
 )
+from socials import socials
 
 connections = {}
 
@@ -33,7 +34,7 @@ class StatProperty(property):
 
 class Character(
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
-    LocationMixin, StatisticsMixin
+    LocationMixin, StatisticsMixin, InvisibleMixin
 ):
     """A player instance."""
 
@@ -61,15 +62,54 @@ class Character(
             self.connection.notify(
                 '*** Logging you in from somewhere else ***'
             )
-            self.connection.object = self
+            self.connection.object = None
             self.connection.transport.loseConnection()
-        self.connection = connection
+        connections[self.id] = connection
         self.notify(f'Welcome back, {self.name}.')
 
     def notify(self, string):
         """Send a string of text to this character."""
         if self.connection is not None:
             return self.connection.notify(string)
+
+    def show_location(self):
+        """Show this character where they are."""
+        self.notify(self.location.name)
+        self.notify(self.location.description)
+
+    def do_social(self, string, *args, _others=None, **kwargs):
+        """Get social strings and send them out to players within this room.
+        This object will be the first object in the perspectives list, that
+        list will be extended by _others."""
+        perspectives = [self]
+        if _others is not None:
+            perspectives.extend(_others)
+        strings = socials.get_strings(string, perspectives, **kwargs)
+        for obj in self.get_visible():
+            if obj in perspectives:
+                msg = strings[perspectives.index(obj)]
+            else:
+                msg = strings[-1]
+            obj.notify(msg)
+
+    def get_visible(self):
+        """Get the things this player can see."""
+        return [x for x in self.location.contents if not x.invisible]
+
+    def match(self, string):
+        """Match a string with an object from this room."""
+        if self.is_admin and string.startswith('#'):
+            return self.match_id(string[1:])
+        else:
+            return self.match_name(string.lower())
+
+    def match_id(self, id):
+        """Match on object ids."""
+        return [x for x in self.get_visible() if str(x.id) == id]
+
+    def match_name(self, name):
+        """Matches on names."""
+        return [x for x in self.get_visible() if x.name.lower() == name]
 
 
 for name in ('hitpoints', 'mana', 'endurance'):

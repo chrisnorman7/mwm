@@ -14,6 +14,10 @@ class Room(Base, NameDescriptionMixin):
     regain = Column(Integer, nullable=False, default=1)
     arrive_msg = Column(String(150), nullable=False, default='%1n arrives.')
 
+    @property
+    def contents(self):
+        return self.objects + self.characters
+
 
 class Door(Base, NameDescriptionMixin, LocationMixin):
     """Link rooms together."""
