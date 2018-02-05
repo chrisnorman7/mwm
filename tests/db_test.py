@@ -34,4 +34,3 @@ def test_door():
         s.add(d)
         s.commit()
         assert d.target is None
-        assert d.use_msg.format(d.name) == 'You walk through a small door.'
