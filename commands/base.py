@@ -17,6 +17,8 @@ class Command(ArgumentParser):
         kwargs.setdefault('formatter_class', ArgumentDefaultsHelpFormatter)
         kwargs.setdefault('description', self.__doc__)
         super().__init__(*args, **kwargs)
+        self.builder = False
+        self.admin = False
         self.aliases = []
         self.rest = None
         self.character = None
@@ -60,3 +62,11 @@ class Command(ArgumentParser):
     def func(self, character, args):
         """Override to provide a meaningful command."""
         raise NotImplementedError()
+
+    def allowed(self, character):
+        """Returns True if character is allowed to use this command, False
+        otherwise."""
+        for perm in ('admin', 'builder'):
+            if getattr(self, perm) > getattr(character, perm):
+                return False
+        return True

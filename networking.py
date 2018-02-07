@@ -112,7 +112,9 @@ class Protocol(LineReceiver):
                 if len(line) == 1:
                     line.append('')
                 command, rest = line
-                if command in commands_table:
+                if command in commands_table and commands_table[
+                    command
+                ].allowed(self.object):
                     commands_table[command].run(self.object, rest)
                 else:
                     self.notify("I don't understand that.")
