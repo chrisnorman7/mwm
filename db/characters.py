@@ -122,7 +122,7 @@ class Character(
 
     def match(self, string):
         """Match a string with an object from this room."""
-        if self.is_admin and string.startswith('#'):
+        if self.admin and string.startswith('#'):
             return self.match_id(string[1:])
         else:
             return self.match_name(string.lower())
@@ -133,7 +133,16 @@ class Character(
 
     def match_name(self, name):
         """Matches on names."""
-        return [x for x in self.get_visible() if x.name.lower() == name]
+        if name == 'me':
+            return [self]
+        elif name == 'here':
+            return [self.location]
+        else:
+            return [
+                x for x in self.get_visible() if x.name.lower().startswith(
+                    name
+                )
+            ]
 
 
 for name in ('hitpoints', 'mana', 'endurance'):
