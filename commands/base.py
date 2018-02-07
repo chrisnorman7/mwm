@@ -13,7 +13,9 @@ class Command(ArgumentParser):
     """Overwrite stupid methods."""
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('prog', self.__class__.__name__.lower())
+        kwargs.setdefault(
+            'prog', self.__class__.__name__.lower().replace('_', '-')
+        )
         kwargs.setdefault('formatter_class', ArgumentDefaultsHelpFormatter)
         kwargs.setdefault('description', self.__doc__)
         super().__init__(*args, **kwargs)
