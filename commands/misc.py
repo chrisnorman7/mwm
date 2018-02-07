@@ -38,3 +38,19 @@ class Password(Command):
                 character.notify('Passwords cannot be blank.')
         else:
             character.notify('Incorrect password.')
+
+
+class Inventory(Command):
+    """Show what you are holding."""
+
+    def on_init(self):
+        self.aliases.extend(['i', 'inv', 'holding', 'h'])
+
+    def func(self, character, args):
+        """Show them what they're holding."""
+        if not character.inventory:
+            character.notify('You are holding nothing.')
+        else:
+            character.notify('You are holding:')
+            for thing in character.inventory:
+                character.notify(thing.name)
