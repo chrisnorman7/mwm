@@ -101,7 +101,7 @@ class Character(
             )
             self.notify(f'You can go {exits}.')
 
-    def do_social(self, string, *args, _others=None, **kwargs):
+    def do_social(self, string, _others=None, **kwargs):
         """Get social strings and send them out to players within this room.
         This object will be the first object in the perspectives list, that
         list will be extended by _others."""
