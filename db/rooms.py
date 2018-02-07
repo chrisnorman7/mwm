@@ -28,5 +28,5 @@ class Door(Base, NameDescriptionMixin, LocationMixin):
         'Room', backref='entrances', foreign_keys=[target_id]
     )
     use_msg = Column(
-        String(150), nullable=False, default='%1n walk%1s through %2n.'
+        String(150), nullable=False, default='%1n walk%1s %2n.'
     )
