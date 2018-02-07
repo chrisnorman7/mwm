@@ -12,6 +12,10 @@ from util import english_list
 connections = {}
 
 
+class AmbiguousMatchError(Exception):
+    """Multiple matches were found."""
+
+
 class StatProperty(property):
     """Get and set statistics in a dynamic fashion."""
 
@@ -143,6 +147,17 @@ class Character(
                     name
                 )
             ]
+
+    def match_single(self, string):
+        """Return only a single match. Raise AmbiguousMatchError if more than
+        one match is found."""
+        results = self.match(string)
+        if not results:
+            return  # Let convert_emote_string handle it.
+        elif len(results) == 1:
+            return results[0]
+        else:
+            raise AmbiguousMatchError(string)
 
 
 for name in ('hitpoints', 'mana', 'endurance'):
