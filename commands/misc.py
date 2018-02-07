@@ -69,6 +69,8 @@ class Commands(Command):
             set(networking.commands_table.values()),
             key=lambda c: c.prog
         ):
+            if not cmd.allowed(character):
+                continue
             character.notify(
                 f'{cmd.prog} ('
                 f'{", ".join(cmd.aliases) if cmd.aliases else "No aliases"})'
