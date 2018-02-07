@@ -31,6 +31,11 @@ class Room(Base, NameDescriptionMixin):
     def contents(self):
         return self.objects + self.characters
 
+    def broadcast(self, message):
+        """Send a message to everyone in this room."""
+        for c in self.characters:
+            c.notify(message)
+
 
 class Exit(Base, NameDescriptionMixin, LocationMixin):
     """Link rooms together."""
