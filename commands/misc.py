@@ -3,7 +3,7 @@
 import logging
 from twisted.internet import reactor
 import networking
-from util import pluralise
+from util import pluralise, english_list
 from .base import Command
 
 logger = logging.getLogger(__name__)
@@ -76,10 +76,8 @@ class Commands(Command):
         ):
             if not cmd.allowed(character):
                 continue
-            character.notify(
-                f'{cmd.prog} ('
-                f'{", ".join(cmd.aliases) if cmd.aliases else "No aliases"})'
-            )
+            character.notify(f'{cmd.prog}: {cmd.description}')
+            character.notify(f'Aliases: {english_list(cmd.aliases)}.')
 
 
 class Shutdown(Command):
