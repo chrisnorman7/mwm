@@ -1,6 +1,7 @@
 """Provides the Character class."""
 
-from sqlalchemy import Column, Boolean, Integer
+from sqlalchemy import Column, Boolean, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 from .base import (
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
     LocationMixin, StatisticsMixin, InvisibleMixin
@@ -32,6 +33,16 @@ class StatProperty(property):
         setattr(instance, self.name, value)
 
 
+class CharacterClassSecondary(Base):
+    """Link characters to classes."""
+
+    __tablename__ = 'character_class_secondary'
+    character_id = Column(Integer, ForeignKey('characters.id'), nullable=False)
+    character_class_id = Column(
+        Integer, ForeignKey('character_classes.id'), nullable=False
+    )
+
+
 class Character(
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
     LocationMixin, StatisticsMixin, InvisibleMixin
@@ -45,6 +56,10 @@ class Character(
     hitpoints = Column(Integer, nullable=True)
     mana = Column(Integer, nullable=True)
     endurance = Column(Integer, nullable=True)
+    character_classes = relationship(
+        'CharacterClass', backref='characters',
+        secondary=CharacterClassSecondary.__table__
+    )
 
     @property
     def connection(self):

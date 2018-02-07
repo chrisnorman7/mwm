@@ -9,7 +9,8 @@ from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
 from .session import Session, session
 from .rooms import Room, Door
-from .characters import Character
+from .character_classes import CharacterClass
+from .characters import Character, CharacterClassSecondary
 from .objects import Object
 from .base import Base
 
@@ -18,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Door', 'Object',
-    'dump_db', 'load_db', 'get_classes'
+    'dump_db', 'load_db', 'get_classes', 'CharacterClass',
+    'CharacterClassSecondary'
 ]
 
 Base.metadata.create_all()
