@@ -22,7 +22,7 @@ for x in dir(commands):
     if isclass(cls) and issubclass(cls, Command):
         cmd = cls()
         for alias in set([cmd.prog] + cmd.aliases):
-            alias = alias.lower()
+            alias = alias.lower().replace('_', '-')
             logger.debug('%s => %r.', alias, cmd)
             commands_table[alias] = cmd
 logger.info('Commands loaded: %d.', len(commands_table))
@@ -124,9 +124,13 @@ class Factory(ServerFactory):
     """Store all connections."""
 
     protocol = Protocol
+    connections = []
+    shutdown_task = None
 
-    def __init__(self):
-        self.connections = []
+    def broadcast(self, message):
+        """Show a message to all connections."""
+        for con in self.connections:
+            con.notify(message)
 
 
 factory = Factory()

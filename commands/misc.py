@@ -1,7 +1,12 @@
 """Miscelaneous commands."""
 
+import logging
+from twisted.internet import reactor
 import networking
+from util import pluralise
 from .base import Command
+
+logger = logging.getLogger(__name__)
 
 
 class Quit(Command):
@@ -75,3 +80,52 @@ class Commands(Command):
                 f'{cmd.prog} ('
                 f'{", ".join(cmd.aliases) if cmd.aliases else "No aliases"})'
             )
+
+
+class Shutdown(Command):
+    """Shutdown the server."""
+
+    def on_init(self):
+        self.admin = True
+        self.aliases.append('@shutdown')
+        self.add_argument(
+            '-a', '--after', type=int, default=10,
+            help='How long until the shutdown occurs'
+        )
+        self.add_argument(
+            '-m', '--message', default='The server is shutting down.',
+            help='The message to show to connected players'
+        )
+
+    def func(self, character, args):
+        logger.info('Shutdown initiated by %s.', character.name)
+        networking.factory.shutdown_task = reactor.callLater(
+            args.after, reactor.stop
+        )
+        when = f'{args.after} {pluralise(args.after, "second")}'
+        networking.factory.broadcast(f'*** Shutdown in {when}. ***')
+        networking.factory.broadcast(args.message)
+
+
+class Abort_Shutdown(Command):
+    """Abort shutdown."""
+
+    def on_init(self):
+        self.aliases.extend(
+            ['@abort-shutdown', '@abort-s', '@shutdown-abort', '@shutdown-a']
+        )
+        self.admin = True
+        self.add_argument(
+            '-m', '--message', help='The reason for aborting the shutdown'
+        )
+
+    def func(self, character, args):
+        if networking.factory.shutdown_task is None:
+            character.notify('The server is not shutting down.')
+        else:
+            logger.info('Shutdown aborted by %s.', character.name)
+            networking.factory.shutdown_task.cancel()
+            networking.factory.shutdown_task = None
+            networking.factory.broadcast('*** Shutdown aborted. ***')
+            if args.message is not None:
+                networking.factory.broadcast(args.message)
