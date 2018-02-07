@@ -44,7 +44,10 @@ class Protocol(LineReceiver):
         self.logger.info(reason.getErrorMessage())
         self.factory.connections.remove(self)
         if self.object is not None:
-            self.object.connection = None
+            with session() as s:
+                self.object.connected = False
+                self.object.connection = None
+                s.add(self.object)
 
     @property
     def object(self):
@@ -58,6 +61,7 @@ class Protocol(LineReceiver):
             return
         self.object_id = character.id
         character.connection = self
+        character.connected = True
 
     def notify(self, string):
         """Send a string of text to this connection."""
@@ -92,15 +96,16 @@ class Protocol(LineReceiver):
                             f'Your new password is {c.randomise_password()}.'
                         )
             else:
-                c = Character.query(
-                    func.lower(Character.name) == self.username
-                ).first()
-                if c is None or not c.check_password(line):
-                    self.notify('Incorrect password.')
-                    self.username = None
-                    return self.notify('Username:')
-                else:
-                    self.object = c
+                with session():
+                    c = Character.query(
+                        func.lower(Character.name) == self.username
+                    ).first()
+                    if c is None or not c.check_password(line):
+                        self.notify('Incorrect password.')
+                        self.username = None
+                        return self.notify('Username:')
+                    else:
+                        self.object = c
             # All checks should have been performed now. Let's tell the user
             # where they are.
             self.object.show_location()

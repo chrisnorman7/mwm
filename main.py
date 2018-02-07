@@ -33,6 +33,8 @@ def main(args):
         config.config.port, factory, interface=config.config.interface
     )
     logging.info('Listening on %s:%d.', listener.interface, listener.port)
+    from log_handler import LogHandler
+    logging.getLogger().addHandler(LogHandler())
     reactor.run()
     logging.info('Server shutting down.')
     dump_db()

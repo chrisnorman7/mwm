@@ -50,6 +50,7 @@ class Character(
     """A player instance."""
 
     __tablename__ = 'characters'
+    connected = Column(Boolean, nullable=False, default=False)
     builder = Column(Boolean, nullable=False, default=False)
     admin = Column(Boolean, nullable=False, default=False)
     mobile = Column(Boolean, nullable=False, default=False)
