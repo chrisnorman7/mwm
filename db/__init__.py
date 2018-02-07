@@ -84,6 +84,13 @@ def load_db():
 def finalise_db():
     """Bootstrap an empty database."""
     with session() as s:
+        if not CharacterClass.count():
+            cls = CharacterClass(
+                name='Default Character Class',
+                _description='Created by db.finalise_db().'
+            )
+            s.add(cls)
+            s.commit()
         if not Room.count():
             s.add(Room(name='The First Room'))
             s.commit()
@@ -98,3 +105,4 @@ def finalise_db():
                 password
             )
             s.add(c)
+            c.character_classes.append(CharacterClass.first())
