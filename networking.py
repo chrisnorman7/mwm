@@ -59,6 +59,7 @@ class Protocol(LineReceiver):
         if character is None:
             self.object_id = None
             return
+        self.logger.info('Authenticated as %s.', character.name)
         self.object_id = character.id
         character.connection = self
         character.connected = True
