@@ -4,6 +4,19 @@ from sqlalchemy import Column, Boolean, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from .base import Base, NameDescriptionMixin, LocationMixin
 
+reverse_exits = {
+    'north': 'the south',
+    'northeast': 'the southwest',
+    'east': 'the west',
+    'southeast': 'the northwest',
+    'south': 'the north',
+    'southwest': 'the northeast',
+    'west': 'the east',
+    'northwest': 'the southeast',
+    'up': 'below',
+    'down': 'above'
+}
+
 
 class Room(Base, NameDescriptionMixin):
     """A room instance."""
@@ -29,4 +42,7 @@ class Door(Base, NameDescriptionMixin, LocationMixin):
     )
     use_msg = Column(
         String(150), nullable=False, default='%1n walk%1s %2n.'
+    )
+    arrive_msg = Column(
+        String(150), nullable=False, default='%1n arrives from {direction}.'
     )
