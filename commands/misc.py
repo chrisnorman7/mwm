@@ -1,5 +1,6 @@
 """Miscelaneous commands."""
 
+import networking
 from .base import Command
 
 
@@ -54,3 +55,18 @@ class Inventory(Command):
             character.notify('You are holding:')
             for thing in character.inventory:
                 character.notify(thing.name)
+
+
+class Commands(Command):
+    """Show all commands."""
+
+    def on_init(self):
+        self.aliases.append('@commands')
+
+    def func(self, character, args):
+        character.notify('Commands:')
+        for cmd in sorted(
+            set(networking.commands_table.values()),
+            key=lambda c: c.prog
+        ):
+            character.notify(f'{cmd.prog} ({", ".join(cmd.aliases)})')

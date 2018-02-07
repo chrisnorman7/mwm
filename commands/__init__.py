@@ -1,8 +1,8 @@
 """All commands should be imported here."""
 
 from .socials import Say
-from .misc import Quit, Password, Inventory
+from .misc import Quit, Password, Inventory, Commands
 
 __all__ = [
-    'Say', 'Quit', 'Password', 'Inventory'
+    'Say', 'Quit', 'Password', 'Inventory', 'Commands'
 ]
