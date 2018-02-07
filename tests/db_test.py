@@ -1,6 +1,6 @@
 """Boring database tests."""
 
-from db import Room, Character, session, Door, Object
+from db import Room, Character, session, Exit, Object
 
 
 with session() as s:
@@ -28,9 +28,9 @@ def test_stats():
     assert c.hitpoints is None
 
 
-def test_door():
+def test_Exit():
     with session() as s:
-        d = Door(name='a small door', location_id=rid)
+        d = Exit(name='a small Exit', location_id=rid)
         s.add(d)
         s.commit()
         assert d.target is None

@@ -32,10 +32,10 @@ class Room(Base, NameDescriptionMixin):
         return self.objects + self.characters
 
 
-class Door(Base, NameDescriptionMixin, LocationMixin):
+class Exit(Base, NameDescriptionMixin, LocationMixin):
     """Link rooms together."""
 
-    __tablename__ = 'doors'
+    __tablename__ = 'exits'
     target_id = Column(Integer, ForeignKey('rooms.id'), nullable=True)
     target = relationship(
         'Room', backref='entrances', foreign_keys=[target_id]

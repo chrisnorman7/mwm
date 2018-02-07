@@ -7,6 +7,7 @@ from .base import (
     LocationMixin, StatisticsMixin, InvisibleMixin
 )
 from socials import socials
+from util import english_list
 
 connections = {}
 
@@ -92,6 +93,13 @@ class Character(
         """Show this character where they are."""
         self.notify(self.location.name)
         self.notify(self.location.description)
+        if not self.location.exits:
+            self.notify('You see no obvious exits.')
+        else:
+            exits = english_list(
+                self.location.exits, key=lambda exit: exit.name, and_='or '
+            )
+            self.notify(f'You can go {exits}.')
 
     def do_social(self, string, *args, _others=None, **kwargs):
         """Get social strings and send them out to players within this room.
