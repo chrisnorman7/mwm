@@ -123,9 +123,14 @@ class Protocol(LineReceiver):
 class Factory(ServerFactory):
     """Store all connections."""
 
-    protocol = Protocol
     connections = []
     shutdown_task = None
+
+    def buildProtocol(self, addr):
+        p = Protocol()
+        p.factory = self
+        logger.info('Incoming connection from %s:%d.', addr.host, addr.port)
+        return p
 
     def broadcast(self, message):
         """Show a message to all connections."""
