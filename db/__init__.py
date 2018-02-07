@@ -13,6 +13,7 @@ from .character_classes import CharacterClass
 from .characters import Character, CharacterClassSecondary
 from .objects import Object
 from .base import Base
+from .skills import WeaponSkill, WeaponSkillSecondary, Spell, SpellSecondary
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,8 @@ logger = logging.getLogger(__name__)
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes', 'CharacterClass',
-    'CharacterClassSecondary'
+    'CharacterClassSecondary', 'WeaponSkill', 'WeaponSkillSecondary', 'Spell',
+    'SpellSecondary'
 ]
 
 Base.metadata.create_all()
