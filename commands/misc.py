@@ -69,4 +69,7 @@ class Commands(Command):
             set(networking.commands_table.values()),
             key=lambda c: c.prog
         ):
-            character.notify(f'{cmd.prog} ({", ".join(cmd.aliases)})')
+            character.notify(
+                f'{cmd.prog} ('
+                f'{", ".join(cmd.aliases) if cmd.aliases else "No aliases"})'
+            )
