@@ -7,9 +7,13 @@ from sqlalchemy import inspect
 from yaml import load, dump
 from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
+
+
+# Database-specific stuff:
 from .session import Session, session
 from .rooms import Room, Exit
 from .character_classes import CharacterClass
+from .genders import Gender
 from .characters import Character, CharacterClassSecondary
 from .objects import Object
 from .base import Base
@@ -22,7 +26,7 @@ __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes', 'CharacterClass',
     'CharacterClassSecondary', 'WeaponSkill', 'WeaponSkillSecondary', 'Spell',
-    'SpellSecondary'
+    'SpellSecondary', 'Gender'
 ]
 
 Base.metadata.create_all()
@@ -96,6 +100,8 @@ def finalise_db():
         if not Room.count():
             s.add(Room(name='The First Room'))
             s.commit()
+        if not Gender.count():
+            s.add(Gender(name='Neutral'))
         if not Character.count():
             r = Room.first()
             c = Character(

@@ -55,6 +55,8 @@ class Character(
     """A player instance."""
 
     __tablename__ = 'characters'
+    gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
+    gender = relationship('Gender', backref='objects')
     connected = Column(Boolean, nullable=False, default=False)
     builder = Column(Boolean, nullable=False, default=False)
     admin = Column(Boolean, nullable=False, default=False)
@@ -87,6 +89,13 @@ class Character(
             self.connection.transport.loseConnection()
         connections[self.id] = connection
         self.notify(f'Welcome back, {self.name}.')
+
+    def get_gender(self):
+        if self.gender_id is None:
+            gid = 1
+        else:
+            gid = self.gender_id
+        return Base._decl_class_registry['Gender'].get(gid)
 
     def notify(self, string):
         """Send a string of text to this character."""
