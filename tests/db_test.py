@@ -1,6 +1,8 @@
 """Boring database tests."""
 
-from db import Room, Character, session, Exit, Object, Guild, GuildSecondary
+from db import (
+    Room, Character, session, Exit, Object, Guild, GuildSecondary, Direction
+)
 
 
 with session() as s:
@@ -75,3 +77,14 @@ def test_guilds():
         s1.level = 5
         s2.level = 10
         assert c.get_level() == 15
+
+
+def test_match_direction():
+    with session() as s:
+        d = Direction.create('testing', opposite_string='the test')
+        s.add(d)
+        s.commit()
+        r = Room.get(rid)
+        assert r.match_direction('t') is d
+        assert r.match_direction('testing') is d
+        assert r.match_direction('fails') is None

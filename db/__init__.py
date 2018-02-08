@@ -8,10 +8,9 @@ from yaml import load, dump
 from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
 
-
 # Database-specific stuff:
 from .session import Session, session
-from .rooms import Room, Exit
+from .rooms import Room, Direction, Exit
 from .guilds import Guild, GuildSecondary
 from .genders import Gender
 from .characters import Character
@@ -25,7 +24,8 @@ logger = logging.getLogger(__name__)
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes',  'Guild', 'GuildSecondary',
-    'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender'
+    'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
+    'Direction'
 ]
 
 Base.metadata.create_all()
@@ -89,6 +89,40 @@ def load_db():
 def finalise_db():
     """Bootstrap an empty database."""
     with session() as s:
+        if not Direction.count():
+            Direction.create(
+                'north', x=0, y=1, z=0, opposite_string='the south'
+            )
+            Direction.create('east', x=1, opposite_string='the west')
+            Direction.create('south', y=-1, opposite_string='the north')
+            Direction.create('west', x=-1, opposite_string='the east')
+            Direction.create('up', z=1, opposite_string='below')
+            Direction.create('down', z=-1, opposite_string='above')
+            Direction.create(
+                'northeast', short_name='ne', x=1, y=1,
+                opposite_string='the southwest'
+            )
+            Direction.create(
+                'southeast', short_name='se', x=1, y=-1,
+                opposite_string='the northwest'
+            )
+            Direction.create(
+                'southwest', short_name='sw', x=-1, y=-1,
+                opposite_string='the northeast'
+            )
+            Direction.create(
+                'northwest', short_name='nw', x=-1, y=1,
+                opposite_string='the southeast'
+            )
+            s.commit()
+            for d in Direction.query():
+                d.opposite = s.query(Direction).filter_by(
+                    x=d.x * -1,
+                    y=d.y * -1,
+                    z=d.z * -1
+                ).first()
+                s.add(d)
+                s.commit()
         if not Room.count():
             s.add(Room(name='The First Room'))
             s.commit()

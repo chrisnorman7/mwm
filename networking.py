@@ -77,7 +77,7 @@ class Protocol(LineReceiver):
                 msg = 'Enter a name for your new character:'
             else:
                 msg = 'Password:'
-            self.notify(msg)
+            return self.notify(msg)
         elif self.object is None:
             if self.username == config.new_character_command:
                 if Character.query(func.lower(Character.name) == line).count():
@@ -109,21 +109,23 @@ class Protocol(LineReceiver):
                         self.object = c
             # All checks should have been performed now. Let's tell the user
             # where they are.
-            self.object.show_location()
-        else:
-            if line:
-                if line[0] in config.command_substitutions:
-                    line = config.command_substitutions[line[0]] + line[1:]
-                line = line.split(' ', 1)
-                if len(line) == 1:
-                    line.append('')
-                command, rest = line
-                if command in commands_table and commands_table[
-                    command
-                ].allowed(self.object):
-                    commands_table[command].run(self.object, rest)
-                else:
-                    self.notify("I don't understand that.")
+            return self.object.show_location()
+        if not line:
+            return  # Just a blank line.
+        if line[0] in config.command_substitutions:
+            line = config.command_substitutions[line[0]] + line[1:]
+        both = line.split(' ', 1)
+        if len(both) == 1:
+            both.append('')
+        command, rest = both
+        if command in commands_table and commands_table[
+            command
+        ].allowed(self.object):
+            return commands_table[command].run(self.object, rest)
+        direction = self.object.location.match_direction(line)
+        if direction is None:
+            return self.notify("I don't understand that.")
+        commands_table['go'].run(self.object, direction.name)
 
 
 class Factory(ServerFactory):

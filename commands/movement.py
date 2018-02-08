@@ -1,23 +1,8 @@
 """Movement commands."""
 
-import networking
 from .base import Command
-from db import Exit, session
-from db.rooms import reverse_exits
+from db import Exit, Direction, session
 from socials import socials
-
-directions = {
-    'north': 'n',
-    'northeast': 'ne',
-    'east': 'e',
-    'southeast': 'se',
-    'south': 's',
-    'southwest': 'sw',
-    'west': 'w',
-    'northwest': 'nw',
-    'up': 'u',
-    'down': 'd'
-}
 
 
 class Go(Command):
@@ -25,11 +10,6 @@ class Go(Command):
 
     def on_init(self):
         self.add_argument('direction', help='The direction to go in.')
-        for long, short in directions.items():
-            d = Direction(prog=long, description=f'Go {long}.')
-            d.aliases.append(short)
-            for part in (long, short):
-                networking.commands_table[part] = d
 
     def func(self, character, args):
         with session() as s:
@@ -39,21 +19,14 @@ class Go(Command):
             if x is None:
                 self.exit(message='You cannot go that way.')
             character.do_social(x.use_msg, _others=[x])
-            if x.name in reverse_exits:
-                direction = reverse_exits[x.name]
-                msg = socials.get_strings(
-                    x.arrive_msg, [character], direction=direction
-                    )
-            else:
+            d = Direction.query(name=x.name).first()
+            if d is None:
                 msg = f'{character.name} arrives.'
+            else:
+                msg = socials.get_strings(
+                    x.arrive_msg, [character], direction=d.opposite_string
+                    )
             x.target.broadcast(msg)
             s.add(character)
             character.location = x.target
             character.show_location()
-
-
-class Direction(Command):
-    """Move in the given direction."""
-
-    def func(self, character, args):
-        networking.commands_table['go'].run(character, self.prog)

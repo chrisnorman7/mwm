@@ -2,21 +2,6 @@
 
 from .base import Command
 from db import Room, Exit, session
-from .movement import directions as _directions
-
-directions = {y: x for x, y in _directions.items()}
-reverse_directions = {
-    'north': 'south',
-    'northeast': 'southwest',
-    'east': 'west',
-    'southeast': 'northwest',
-    'south': 'north',
-    'southwest': 'northeast',
-    'west': 'east',
-    'northwest': 'southeast',
-    'up': 'down',
-    'down': 'up'
-}
 
 
 class Dig(Command):
@@ -26,39 +11,49 @@ class Dig(Command):
         self.aliases.append('@dig')
         self.builder = True
         self.add_argument(
-            'direction', choices=directions.keys(),
-            help='The direction to build in'
+            'direction', help='The direction to build in'
         )
         self.add_argument(
-            'name', nargs='?', default='New Room',
-            help='The name of the new room'
+            'title', nargs='?', default='New Room',
+            help='The title of the new room'
         )
 
     def func(self, character, args):
-        if not args.name:
-            self.exit(message='Room names cannot be blank.')
-        direction = directions[args.direction]
+        direction = args.direction
+        title = args.title
+        if not title:
+            self.exit(message='Room titles cannot be blank.')
         with session() as s:
+            d = character.location.match_direction(direction)
+            if d is None:
+                self.exit(message=f'Invalid exit: {direction}')
+            direction = d.name
             if Exit.query(
                 name=direction, location_id=character.location_id
             ).count():
                 self.exit(
                     message='There is already an exit in that direction.'
                 )
-            r = Room(name=args.name)
-            s.add(r)
-            s.commit()
+            x, y, z = d.coordinates_from(character.location.coordinates)
+            r = Room.query(x=x, y=y, z=z).first()
+            if r is None:
+                r = Room(name=title, x=x, y=y, z=z)
+                s.add(r)
+                s.commit()
+                msg = f'Created room {r}.'
+            else:
+                msg = f'Linking to room {r}.'
+            character.notify(msg)
             x = Exit(
                 name=direction, location_id=character.location_id,
                 target_id=r.id
             )
             y = Exit(
-                name=reverse_directions[direction], location_id=r.id,
+                name=d.opposite.name, location_id=r.id,
                 target_id=character.location.id
             )
             s.add_all([x, y])
             s.commit()
-            character.notify(f'Created room {r}.')
             for thing in [x, y]:
                 character.notify(
                     f'Created exit {thing} from {thing.location} to '

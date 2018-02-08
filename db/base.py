@@ -147,3 +147,17 @@ class StatisticsMixin:
 
 class InvisibleMixin:
     invisible = Column(Boolean, nullable=False, default=False)
+
+
+class CoordinatesMixin:
+    x = Column(Integer, nullable=False, default=0.0)
+    y = Column(Integer, nullable=False, default=0.0)
+    z = Column(Integer, nullable=False, default=0.0)
+
+    @property
+    def coordinates(self):
+        return (self.x, self.y, self.z)
+
+    @coordinates.setter
+    def coordinates(self, value):
+        self.x, self.y, self.z = value

@@ -1,24 +1,54 @@
 """Provides the Room class."""
 
-from sqlalchemy import Column, Boolean, Integer, ForeignKey, String
+import logging
+from sqlalchemy import Column, Boolean, Integer, ForeignKey, String, or_
 from sqlalchemy.orm import relationship
-from .base import Base, NameDescriptionMixin, LocationMixin
+from .base import (
+    Base, NameMixin, NameDescriptionMixin, LocationMixin, CoordinatesMixin
+)
+from .session import Session
 
-reverse_exits = {
-    'north': 'the south',
-    'northeast': 'the southwest',
-    'east': 'the west',
-    'southeast': 'the northwest',
-    'south': 'the north',
-    'southwest': 'the northeast',
-    'west': 'the east',
-    'northwest': 'the southeast',
-    'up': 'below',
-    'down': 'above'
-}
+logger = logging.getLogger(__name__)
 
 
-class Room(Base, NameDescriptionMixin):
+class Direction(Base, NameMixin, CoordinatesMixin):
+    """A direction a player or vehicle can move in."""
+
+    __tablename__ = 'directions'
+    short_name = Column(String(2), nullable=False)
+    opposite_id = Column(
+        Integer,
+        ForeignKey(f'{__tablename__}.id'),
+        nullable=True,  # Undesirable but prevents a chicken and egg situation.
+        default=None
+    )
+    opposite = relationship(
+        'Direction',
+        backref='opposites',
+        remote_side='Direction.id'
+    )
+    opposite_string = Column(String(50), nullable=False)
+
+    def coordinates_from(self, start):
+        """Apply this direction to coordinates start and return the
+        destination coordinates."""
+        x, y, z = start
+        return (
+            x + self.x,
+            y + self.y,
+            z + self.z
+        )
+
+    @classmethod
+    def create(cls, name, **kwargs):
+        kwargs.setdefault('short_name', name[0])
+        d = cls(name=name, **kwargs)
+        logger.info('Created direction %s.', d.name)
+        Session.add(d)
+        return d
+
+
+class Room(Base, NameDescriptionMixin, CoordinatesMixin):
     """A room instance."""
 
     __tablename__ = 'rooms'
@@ -35,6 +65,12 @@ class Room(Base, NameDescriptionMixin):
         """Send a message to everyone in this room."""
         for c in self.characters:
             c.notify(message)
+
+    def match_direction(self, string):
+        """Return a single direction or None."""
+        return Direction.query(
+            or_(Direction.name == string, Direction.short_name == string)
+        ).first()
 
 
 class Exit(Base, NameDescriptionMixin, LocationMixin):
