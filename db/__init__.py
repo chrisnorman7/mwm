@@ -12,9 +12,9 @@ from config import config
 # Database-specific stuff:
 from .session import Session, session
 from .rooms import Room, Exit
-from .character_classes import CharacterClass
+from .guilds import Guild, GuildSecondary
 from .genders import Gender
-from .characters import Character, CharacterClassSecondary
+from .characters import Character
 from .objects import Object
 from .base import Base
 from .skills import WeaponSkill, WeaponSkillSecondary, Spell, SpellSecondary
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes', 'CharacterClass',
-    'CharacterClassSecondary', 'WeaponSkill', 'WeaponSkillSecondary', 'Spell',
+    'Guild', 'GuildSecondary', 'WeaponSkill', 'WeaponSkillSecondary', 'Spell',
     'SpellSecondary', 'Gender'
 ]
 
@@ -90,13 +90,6 @@ def load_db():
 def finalise_db():
     """Bootstrap an empty database."""
     with session() as s:
-        if not CharacterClass.count():
-            cls = CharacterClass(
-                name='Default Character Class',
-                _description='Created by db.finalise_db().'
-            )
-            s.add(cls)
-            s.commit()
         if not Room.count():
             s.add(Room(name='The First Room'))
             s.commit()
@@ -113,4 +106,3 @@ def finalise_db():
                 password
             )
             s.add(c)
-            c.character_classes.append(CharacterClass.first())

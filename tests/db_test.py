@@ -1,6 +1,6 @@
 """Boring database tests."""
 
-from db import Room, Character, session, Exit, Object
+from db import Room, Character, session, Exit, Object, Guild, GuildSecondary
 
 
 with session() as s:
@@ -55,3 +55,23 @@ def test_container():
         s.commit()
         assert o.inside is c
         assert o in c.contains
+
+
+def test_guilds():
+    with session() as s:
+        g1 = Guild(name='First Test Guild')
+        g2 = Guild(name='Second Test Guild')
+        s.add_all([g1, g2])
+        s.commit()
+        c = Character.get(cid)
+        s1 = GuildSecondary(character_id=c.id, guild_id=g1.id)
+        s2 = GuildSecondary(character_id=c.id, guild_id=g2.id)
+        s.add_all([s1, s2])
+        s.commit()
+        assert g1 in c.guilds
+        assert g2 in c.guilds
+        assert len(c.guilds) == 2
+        assert c.level == 0
+        s1.level = 5
+        s2.level = 10
+        assert c.get_level() == 15
