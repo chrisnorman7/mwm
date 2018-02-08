@@ -90,7 +90,7 @@ class Character(
 
     def show_location(self):
         """Show this character where they are."""
-        self.notify(self.location.name)
+        self.notify(f'[{self.location.zone.name}: {self.location.name}]')
         self.notify(self.location.description)
         if not self.location.exits:
             self.notify('You see no obvious exits.')

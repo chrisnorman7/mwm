@@ -10,7 +10,7 @@ from config import config
 
 # Database-specific stuff:
 from .session import Session, session
-from .rooms import Room, Direction, Exit
+from .rooms import Room, Direction, Exit, Zone
 from .guilds import Guild, GuildSecondary
 from .genders import Gender
 from .characters import Character
@@ -25,7 +25,7 @@ __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes',  'Guild', 'GuildSecondary',
     'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
-    'Direction'
+    'Direction', 'Zone'
 ]
 
 Base.metadata.create_all()
@@ -123,8 +123,10 @@ def finalise_db():
                 ).first()
                 s.add(d)
                 s.commit()
+        if not Zone.count():
+            s.add(Zone(name='Default Zone'))
         if not Room.count():
-            s.add(Room(name='The First Room'))
+            s.add(Room(name='The First Room', zone_id=Zone.first().id))
             s.commit()
         if not Gender.count():
             s.add(Gender(name='Neutral'))

@@ -1,4 +1,4 @@
-"""Provides the Room class."""
+"""Provides room-related classes."""
 
 import logging
 from sqlalchemy import Column, Boolean, Integer, ForeignKey, String, or_
@@ -48,6 +48,14 @@ class Direction(Base, NameMixin, CoordinatesMixin):
         return d
 
 
+class Zone(Base, NameDescriptionMixin):
+    """A zone which contains 0 or more rooms."""
+
+    __tablename__ = 'zones'
+    builder_id = Column(Integer, ForeignKey('characters.id'), nullable=True)
+    builder = relationship('Character', backref='zones')
+
+
 class Room(Base, NameDescriptionMixin, CoordinatesMixin):
     """A room instance."""
 
@@ -55,7 +63,8 @@ class Room(Base, NameDescriptionMixin, CoordinatesMixin):
     lit = Column(Boolean, nullable=False, default=True)
     safe = Column(Boolean, nullable=False, default=False)
     regain = Column(Integer, nullable=False, default=1)
-    arrive_msg = Column(String(150), nullable=False, default='%1n arrives.')
+    zone_id = Column(Integer, ForeignKey('zones.id'), nullable=False)
+    zone = relationship('Zone', backref='rooms')
 
     @property
     def contents(self):
