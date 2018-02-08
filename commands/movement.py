@@ -37,7 +37,7 @@ class Go(Command):
                 location_id=character.location_id, name=args.direction.lower()
             ).first()
             if x is None:
-                return character.notify('You cannot go that way.')
+                self.exit(message='You cannot go that way.')
             character.do_social(x.use_msg, _others=[x])
             if x.name in reverse_exits:
                 direction = reverse_exits[x.name]
