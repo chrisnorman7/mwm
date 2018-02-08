@@ -5,6 +5,7 @@ from .base import Command
 from db import Exit, session
 from db.rooms import reverse_exits
 from socials import socials
+
 directions = {
     'north': 'n',
     'northeast': 'ne',
