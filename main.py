@@ -2,8 +2,14 @@
 
 import logging
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from subprocess import check_output, CalledProcessError
 from twisted.internet import reactor
 import config
+
+try:
+    __version__ = check_output(['git', 'describe', '--tags']).strip().decode()
+except CalledProcessError:  # Probably not running inside git.
+    __version__ = 'Unknown'
 
 parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -25,6 +31,7 @@ def main(args):
         print('Unable to initialise logging: %s' % e)
         raise SystemExit
     logging.info('Starting the server...')
+    logging.info('Version: %s.', __version__)
     config.config = config.Config.load(args.config_file)
     from db import load_db, dump_db
     load_db()
