@@ -59,6 +59,9 @@ Base = declarative_base(bind=engine, cls=_Base)
 class NameMixin:
     name = Column(String(50), nullable=False)
 
+    def __str__(self):
+        return f'{self.name} (#{self.id})'
+
 
 class DescriptionMixin:
     _description = Column(String(500), nullable=True)

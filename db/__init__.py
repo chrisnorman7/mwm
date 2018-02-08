@@ -24,9 +24,8 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
-    'dump_db', 'load_db', 'get_classes', 'CharacterClass',
-    'Guild', 'GuildSecondary', 'WeaponSkill', 'WeaponSkillSecondary', 'Spell',
-    'SpellSecondary', 'Gender'
+    'dump_db', 'load_db', 'get_classes',  'Guild', 'GuildSecondary',
+    'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender'
 ]
 
 Base.metadata.create_all()
