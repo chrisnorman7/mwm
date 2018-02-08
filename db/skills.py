@@ -3,11 +3,11 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from .base import Base, NameDescriptionMixin
+from .base import Base, NameDescriptionMixin, LevelMixin
 
 
 class SkillMixin:
-    max_skill = Column(Integer, nullable=False, default=100)
+    max_level = Column(Integer, nullable=False, default=100)
 
     @declared_attr
     def characters(cls):
@@ -31,10 +31,8 @@ class ActiveSkillMixin(SkillMixin):
     )
 
 
-class SkillSecondaryMixin:
+class SkillSecondaryMixin(LevelMixin):
     """Link skills to players."""
-
-    level = Column(Integer, nullable=False, default=0)
 
     @declared_attr
     def character_id(cls):
