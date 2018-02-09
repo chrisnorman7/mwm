@@ -69,7 +69,7 @@ class Commands(Command):
         self.aliases.append('@commands')
 
     def func(self, character, args, text):
-        character.notify('Commands:')
+        character.notify('Game Commands:')
         for cmd in sorted(
             set(networking.commands_table.values()),
             key=lambda c: c.prog
@@ -78,6 +78,12 @@ class Commands(Command):
                 continue
             character.notify(f'{cmd.prog}: {cmd.description}')
             character.notify(f'Aliases: {english_list(cmd.aliases)}.')
+        character.notify('Room Commands')
+        if character.location.command:
+            for cmd in character.location.commands:
+                character.notify(f'{cmd.name}: {cmd.description}')
+        else:
+            character.notify('None.')
 
 
 class Shutdown(Command):

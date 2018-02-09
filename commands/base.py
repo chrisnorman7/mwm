@@ -72,7 +72,7 @@ class Command(ArgumentParser):
     def allowed(self, character):
         """Returns True if character is allowed to use this command, False
         otherwise."""
-        for perm in ('builder', 'admin', 'Programmer'):
+        for perm in ('builder', 'admin', 'programmer'):
             if getattr(self, perm) > getattr(character, perm):
                 return False
         return True
