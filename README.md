@@ -33,6 +33,8 @@ MWM has support for command substitutions. By default:
   <dd>emote</dd>
   <dt>;</dt>
   <dd>eval</dd>
+  <dt>`</dt>
+  <dd>exec</dd>
 </dl>
 
 These are configurable on a per-instance basis with the configuration module (which has yet to gain a front end).

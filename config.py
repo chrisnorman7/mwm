@@ -23,7 +23,8 @@ class Config:
             lambda: {
                 "'": 'say ',
                 ':': 'emote ',
-                ';': 'eval '
+                ';': 'eval ',
+                '`': 'exec '
             }
         )
     )
