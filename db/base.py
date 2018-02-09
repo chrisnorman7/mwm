@@ -161,3 +161,9 @@ class CoordinatesMixin:
     @coordinates.setter
     def coordinates(self, value):
         self.x, self.y, self.z = value
+
+
+class CodeMixin:
+    """Add code to anything."""
+
+    code = Column(String(1000000), nullable=False)
