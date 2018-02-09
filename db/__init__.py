@@ -5,6 +5,7 @@ import os
 from inspect import isclass
 from sqlalchemy import inspect
 from yaml import load, dump
+from pyperclip import copy
 from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
 
@@ -140,4 +141,6 @@ def finalise_db():
                 'Created default character "%s" with password %s.', c.name,
                 password
             )
+            copy(password)
+            logger.info('Password copied to clipboard.')
             s.add(c)

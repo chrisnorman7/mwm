@@ -5,3 +5,4 @@ db-dumper
 passlib
 random-password
 emote-utils
+pyperclip
