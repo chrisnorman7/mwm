@@ -11,7 +11,7 @@ from config import config
 
 # Database-specific stuff:
 from .session import Session, session
-from .rooms import Room, Direction, Exit, Zone
+from .rooms import Room, Direction, Exit, Zone, RoomCommand
 from .guilds import Guild, GuildSecondary
 from .genders import Gender
 from .characters import Character, Race
@@ -26,7 +26,7 @@ __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes',  'Guild', 'GuildSecondary',
     'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
-    'Direction', 'Zone', 'Race'
+    'Direction', 'Zone', 'Race', 'RoomCommand'
 ]
 
 Base.metadata.create_all()
