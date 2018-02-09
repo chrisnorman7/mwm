@@ -32,10 +32,14 @@ class Command(ArgumentParser):
     def on_init(self):
         """Called after __init__, avoiding all that super rubbish."""
 
+    def _print_message(self, message, file=None):
+        """Always print to sys.stdout."""
+        sys.stdout.write(message)
+
     def exit(self, status=0, message=None):
         """Don't exit the program."""
         if message:
-            sys.stderr.write(message)
+            sys.stdout.write(message)
         raise CommandExit()
 
     def run(self, character, text):
