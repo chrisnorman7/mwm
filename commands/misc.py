@@ -4,6 +4,7 @@ import logging
 from twisted.internet import reactor
 import networking
 from util import pluralise, english_list
+from db.characters import AmbiguousMatchError
 from .base import Command
 
 logger = logging.getLogger(__name__)
@@ -127,3 +128,30 @@ class Abort_Shutdown(Command):
             networking.factory.broadcast('*** Shutdown aborted. ***')
             if args.message is not None:
                 networking.factory.broadcast(args.message)
+
+
+class Look(Command):
+    """Look at things around you."""
+
+    def on_init(self):
+        self.add_argument(
+            'thing', nargs='?', default='here', help='What to look at'
+        )
+        self.aliases.extend(['l', 'look at'])
+
+    def func(self, character, args, text):
+        try:
+            obj = character.match_single(args.thing)
+        except AmbiguousMatchError as e:
+            self.exit(message=f'I don\'t know which "{e}" you mean.')
+        if obj is None:
+            self.exit(message=f'I don\'t see \"{args.thing} here.')
+        character.notify(obj.name)
+        character.notify(obj.description)
+        if obj is character.location:
+            msg = f'{character.name} looks around.'
+        else:
+            msg = f'{character.name} looks at {obj.name}.'
+        for char in character.location.characters:
+            if char is not character:
+                char.notify(msg)
