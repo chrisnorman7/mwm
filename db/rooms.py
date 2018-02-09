@@ -4,7 +4,8 @@ import logging
 from sqlalchemy import Column, Boolean, Integer, ForeignKey, String, or_
 from sqlalchemy.orm import relationship
 from .base import (
-    Base, NameMixin, NameDescriptionMixin, LocationMixin, CoordinatesMixin
+    Base, NameMixin, NameDescriptionMixin, LocationMixin, CoordinatesMixin,
+    CodeMixin
 )
 from .session import Session
 
@@ -99,3 +100,9 @@ class Exit(Base, NameDescriptionMixin, LocationMixin):
     arrive_msg = Column(
         String(150), nullable=False, default='%1n arrives from {direction}.'
     )
+
+
+class RoomCommand(Base, NameDescriptionMixin, LocationMixin, CodeMixin):
+    """Add commands to rooms."""
+
+    __tablename__ = 'room_commands'
