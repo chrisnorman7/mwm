@@ -15,9 +15,9 @@ class Quit(Command):
     def on_init(self):
         self.aliases.append('@quit')
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         """Let's disconnect them."""
-        if self.rest:
+        if text:
             character.notify('This command takes no arguments.')
         else:
             character.notify('See you soon.')
@@ -32,7 +32,7 @@ class Password(Command):
         self.add_argument('old', help='Your old password')
         self.add_argument('new', help='Your new password')
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         if character.check_password(args.old):
             if args.new:
                 character.set_password(args.new)
@@ -52,7 +52,7 @@ class Inventory(Command):
     def on_init(self):
         self.aliases.extend(['i', 'inv', 'holding', 'h'])
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         """Show them what they're holding."""
         if not character.inventory:
             character.notify('You are holding nothing.')
@@ -68,7 +68,7 @@ class Commands(Command):
     def on_init(self):
         self.aliases.append('@commands')
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         character.notify('Commands:')
         for cmd in sorted(
             set(networking.commands_table.values()),
@@ -95,7 +95,7 @@ class Shutdown(Command):
             help='The message to show to connected players'
         )
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         logger.info('Shutdown initiated by %s.', character.name)
         networking.factory.shutdown_task = reactor.callLater(
             args.after, reactor.stop
@@ -117,7 +117,7 @@ class Abort_Shutdown(Command):
             '-m', '--message', help='The reason for aborting the shutdown'
         )
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         if networking.factory.shutdown_task is None:
             character.notify('The server is not shutting down.')
         else:

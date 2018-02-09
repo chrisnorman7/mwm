@@ -11,7 +11,7 @@ class Go(Command):
     def on_init(self):
         self.add_argument('direction', help='The direction to go in.')
 
-    def func(self, character, args):
+    def func(self, character, args, rest):
         with session() as s:
             x = Exit.query(
                 location_id=character.location_id, name=args.direction.lower()

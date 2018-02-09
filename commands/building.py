@@ -18,7 +18,7 @@ class Dig(Command):
             help='The title of the new room'
         )
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         direction = args.direction
         title = args.title
         if not title:

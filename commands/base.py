@@ -22,8 +22,6 @@ class Command(ArgumentParser):
         self.builder = False
         self.admin = False
         self.aliases = []
-        self.rest = None
-        self.character = None
         self.on_init()
 
     def on_init(self):
@@ -43,25 +41,20 @@ class Command(ArgumentParser):
         if self.character is not None:
             self.character.notify(message)
 
-    def run(self, character, rest):
+    def run(self, character, text):
         """Call with a Character instance and the text from the command line with the
         command name excluded."""
-        self.rest = rest
-        self.character = character
         try:
-            args = self.parse_args(split(self.rest, posix=False))
-            self.func(character, args)
+            args = self.parse_args(split(text, posix=False))
+            self.func(character, args, text)
         except CommandExit:
             pass  # That's OK.
         except Exception as e:
             logger.warning('Error in %r:', self)
             logger.exception(e)
             raise
-        finally:
-            self.character = None
-            self.rest = None
 
-    def func(self, character, args):
+    def func(self, character, args, text):
         """Override to provide a meaningful command."""
         raise NotImplementedError()
 
