@@ -138,7 +138,8 @@ class Protocol(LineReceiver):
             if cmd is not None:
                 try:
                     with manage_environment(
-                        character=self.object, here=self.object.location, text=rest
+                        character=self.object, here=self.object.location,
+                        text=rest
                     ) as lua:
                         lua.execute(cmd.code)
                 except Exception as e:
