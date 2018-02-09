@@ -6,3 +6,4 @@ passlib
 random-password
 emote-utils
 pyperclip
+lupa
