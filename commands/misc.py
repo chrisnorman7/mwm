@@ -146,8 +146,11 @@ class Look(Command):
             self.exit(message=f'I don\'t know which "{e}" you mean.')
         if obj is None:
             self.exit(message=f'I don\'t see \"{args.thing} here.')
-        character.notify(obj.name)
-        character.notify(obj.description)
+        elif obj is character.location:
+            character.show_location()
+        else:
+            character.notify(obj.name)
+            character.notify(obj.description)
         if obj is character.location:
             msg = f'{character.name} looks around.'
         else:
