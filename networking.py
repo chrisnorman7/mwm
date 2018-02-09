@@ -71,24 +71,29 @@ class Protocol(LineReceiver):
     def lineReceived(self, line):
         """A line was received."""
         line = line.decode(encoding, 'replace')
-        if self.username is None:
-            self.username = line.lower()
-            if line == config.new_character_command:
-                msg = 'Enter a name for your new character:'
-            else:
-                msg = 'Password:'
-            return self.notify(msg)
-        elif self.object is None:
-            if self.username == config.new_character_command:
-                if Character.query(func.lower(Character.name) == line).count():
-                    return self.notify(
-                        'That character name is taken. Please choose another.'
-                    )
-                elif not line:
-                    self.notify('Character names cannot be blank. Goodbye.')
-                    return self.transport.loseConnection()
+        with session() as s:
+            if self.username is None:
+                self.username = line.lower()
+                if line == config.new_character_command:
+                    msg = 'Enter a name for your new character:'
                 else:
-                    with session() as s:
+                    msg = 'Password:'
+                return self.notify(msg)
+            elif self.object is None:
+                if self.username == config.new_character_command:
+                    if Character.query(
+                        func.lower(Character.name) == line
+                    ).count():
+                        return self.notify(
+                            'That character name is taken. Please choose '
+                            'another.'
+                        )
+                    elif not line:
+                        self.notify(
+                            'Character names cannot be blank. Goodbye.'
+                        )
+                        return self.transport.loseConnection()
+                    else:
                         c = Character(name=line.title())
                         s.add(c)
                         s.commit()
@@ -96,8 +101,7 @@ class Protocol(LineReceiver):
                         self.notify(
                             f'Your new password is {c.randomise_password()}.'
                         )
-            else:
-                with session():
+                else:
                     c = Character.query(
                         func.lower(Character.name) == self.username
                     ).first()
@@ -107,25 +111,30 @@ class Protocol(LineReceiver):
                         return self.notify('Username:')
                     else:
                         self.object = c
-            # All checks should have been performed now. Let's tell the user
-            # where they are.
-            return self.object.show_location()
-        if not line:
-            return  # Just a blank line.
-        if line[0] in config.command_substitutions:
-            line = config.command_substitutions[line[0]] + line[1:]
-        both = line.split(' ', 1)
-        if len(both) == 1:
-            both.append('')
-        command, rest = both
-        if command in commands_table and commands_table[
-            command
-        ].allowed(self.object):
-            return commands_table[command].run(self.object, rest)
-        direction = self.object.location.match_direction(line)
-        if direction is None:
-            return self.notify("I don't understand that.")
-        commands_table['go'].run(self.object, direction.name)
+                # All checks should have been performed now. Let's tell the
+                # user where they are.
+                return self.object.show_location()
+            if not line:
+                return  # Just a blank line.
+            if line[0] in config.command_substitutions:
+                line = config.command_substitutions[line[0]] + line[1:]
+            both = line.split(' ', 1)
+            if len(both) == 1:
+                both.append('')
+            command, rest = both
+            if command in commands_table and commands_table[
+                command
+            ].allowed(self.object):
+                try:
+                    return commands_table[command].run(self.object, rest)
+                except Exception as e:
+                    return self.object.notify(
+                        'Something went wrong with your command.'
+                    )
+            direction = self.object.location.match_direction(line)
+            if direction is None:
+                return self.notify("I don't understand that.")
+            commands_table['go'].run(self.object, direction.name)
 
 
 class Factory(ServerFactory):

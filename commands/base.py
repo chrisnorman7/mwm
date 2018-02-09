@@ -1,4 +1,9 @@
+"""Provides the Command class."""
+
 import logging
+import sys
+from contextlib import redirect_stdout, redirect_stderr
+from io import StringIO
 from shlex import split
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
@@ -30,29 +35,30 @@ class Command(ArgumentParser):
     def exit(self, status=0, message=None):
         """Don't exit the program."""
         if message:
-            self._print_message(message)
-        logger.info(
-            'Command %s exited with status %s: %s', self.prog, status,
-            message
-        )
+            sys.stderr.write(message)
         raise CommandExit()
-
-    def _print_message(self, message, file=None):
-        if self.character is not None:
-            self.character.notify(message)
 
     def run(self, character, text):
         """Call with a Character instance and the text from the command line with the
         command name excluded."""
-        try:
-            args = self.parse_args(split(text, posix=False))
-            self.func(character, args, text)
-        except CommandExit:
-            pass  # That's OK.
-        except Exception as e:
-            logger.warning('Error in %r:', self)
-            logger.exception(e)
-            raise
+        f = StringIO()
+        with redirect_stdout(f), redirect_stderr(f):
+            try:
+                cmd = split(text)
+            except ValueError:  # Probably unbalanced quotation marks.
+                cmd = text
+            try:
+                args = self.parse_args(cmd)
+                self.func(character, args, text)
+            except CommandExit:
+                pass  # That's OK.
+            except Exception as e:
+                logger.warning('Error in %r:', self)
+                logger.exception(e)
+                raise
+            finally:
+                f.seek(0)
+                character.notify(f.read())
 
     def func(self, character, args, text):
         """Override to provide a meaningful command."""
