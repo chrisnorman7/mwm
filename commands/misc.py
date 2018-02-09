@@ -155,3 +155,20 @@ class Look(Command):
         for char in character.location.characters:
             if char is not character:
                 char.notify(msg)
+
+
+class Exits(Command):
+    """Show the obvious exits leading from this room."""
+
+    def on_init(self):
+        self.aliases.append('@exits')
+
+    def func(self, character, args, text):
+        loc = character.location
+        if not loc.exits:
+            self.exit(message='There are no obvious exits.')
+        character.notify('Obvious exits:')
+        for exit in loc.exits:
+            character.notify(
+                f'{exit.name} to {exit.target.name}: {exit.description}'
+            )
