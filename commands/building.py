@@ -1,7 +1,7 @@
 """Building commands."""
 
 from .base import Command
-from db import Room, Exit, Session as s
+from db import Character, Room, Exit, Session as s
 
 
 class Dig(Command):
@@ -58,3 +58,35 @@ class Dig(Command):
                 f'Created exit {thing} from {thing.location} to '
                 f'{thing.target}.'
             )
+
+
+class ZEdit(Command):
+    """Edit the current zone."""
+
+    def on_init(self):
+        self.admin = True
+        self.aliases.append('@zedit')
+        self.add_argument('-n', '--name', help='New name for the zone')
+        self.add_argument(
+            '-d', '--description', help='New description for the zone'
+        )
+        self.add_argument(
+            '-b', '--builder', help='Change ownership of the zone'
+        )
+
+    def func(self, character, args, text):
+        z = character.location.zone
+        if args.name:
+            z.name = args.name
+        character.notify(f'Name: {z.name}.')
+        if args.description:
+            z.description = args.description
+        character.notify(f'Description: {z.description}')
+        if args.builder:
+            obj = character.get_single_match(args.builder)
+            if obj is not None:
+                if isinstance(obj, Character):
+                    z.builder = obj
+                else:
+                    self.exit(message=f'{obj} is not a character.')
+        character.notify(f'Builder: {z.builder}.')

@@ -4,7 +4,6 @@ import logging
 from twisted.internet import reactor
 import networking
 from util import pluralise, english_list
-from db.characters import AmbiguousMatchError
 from .base import Command
 
 logger = logging.getLogger(__name__)
@@ -140,12 +139,9 @@ class Look(Command):
         self.aliases.extend(['l', 'look at'])
 
     def func(self, character, args, text):
-        try:
-            obj = character.match_single(args.thing)
-        except AmbiguousMatchError as e:
-            self.exit(message=f'I don\'t know which "{e}" you mean.')
+        obj = character.get_single_match(args.thing)
         if obj is None:
-            self.exit(message=f'I don\'t see \"{args.thing} here.')
+            return
         elif obj is character.location:
             character.show_location()
         else:

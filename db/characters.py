@@ -162,6 +162,16 @@ class Character(
         else:
             raise AmbiguousMatchError(string)
 
+    def get_single_match(self, string, *args, **kwargs):
+        """Return a single match or None. Sends all messages to the player."""
+        try:
+            m = self.match_single(string, *args, **kwargs)
+            if m is None:
+                self.notify('I don\'t see "{string}" here.')
+            return m
+        except AmbiguousMatchError as e:
+            self.notify('I don\'t know which "{e}" you mean.')
+
     def get_level(self):
         """Get this character's total level."""
         level = 0

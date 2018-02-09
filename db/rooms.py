@@ -48,10 +48,13 @@ class Direction(Base, NameMixin, CoordinatesMixin):
         return d
 
 
-class Zone(Base, NameDescriptionMixin):
+class Zone(Base, NameMixin):
     """A zone which contains 0 or more rooms."""
 
     __tablename__ = 'zones'
+    description = Column(
+        String(500), nullable=False, default='No description available.'
+    )
     builder_id = Column(Integer, ForeignKey('characters.id'), nullable=True)
     builder = relationship('Character', backref='zones')
 
