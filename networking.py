@@ -8,8 +8,9 @@ from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 import commands
 from commands.base import Command
-from db import Character, session
+from db import Character, session, RoomCommand
 from config import config
+from programming import manage_environment
 
 encoding = sys.getdefaultencoding()
 logger = logging.getLogger(__name__)
@@ -131,6 +132,20 @@ class Protocol(LineReceiver):
                     return self.object.notify(
                         'Something went wrong with your command.'
                     )
+            cmd = RoomCommand.query(
+                name=command, location_id=self.object.location_id
+            ).first()
+            if cmd is not None:
+                try:
+                    with manage_environment(
+                        character=self.object, here=self.object.location, text=rest
+                    ) as lua:
+                        lua.execute(cmd.code)
+                except Exception as e:
+                    self.notify('There was a problem with your command.')
+                    logger.warning('Room command %s caused an error:', cmd)
+                    logger.exception(e)
+                return
             direction = self.object.location.match_direction(line)
             if direction is None:
                 return self.notify("I don't understand that.")
