@@ -22,7 +22,8 @@ class Config:
         default=Factory(
             lambda: {
                 "'": 'say ',
-                ':': 'emote '
+                ':': 'emote ',
+                ';': 'eval '
             }
         )
     )
