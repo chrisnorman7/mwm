@@ -79,8 +79,8 @@ class Commands(Command):
             character.notify(f'{cmd.prog}: {cmd.description}')
             character.notify(f'Aliases: {english_list(cmd.aliases)}.')
         character.notify('Room Commands')
-        if character.location.command:
-            for cmd in character.location.commands:
+        if character.location.room_commands:
+            for cmd in character.location.room_commands:
                 character.notify(f'{cmd.name}: {cmd.description}')
         else:
             character.notify('None.')
