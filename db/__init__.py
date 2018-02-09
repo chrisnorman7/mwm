@@ -5,7 +5,7 @@ import os
 from inspect import isclass
 from sqlalchemy import inspect
 from yaml import load, dump
-from pyperclip import copy
+from pyperclip import copy, PyperclipException
 from db_dumper import load as dumper_load, dump as dumper_dump
 from config import config
 
@@ -142,6 +142,9 @@ def finalise_db():
                 'Created default character "%s" with password %s.', c.name,
                 password
             )
-            copy(password)
-            logger.info('Password copied to clipboard.')
+            try:
+                copy(password)
+                logger.info('Password copied to clipboard.')
+            except PyperclipException:
+                logger.info('Could not copy password to the clipboard.')
             s.add(c)
