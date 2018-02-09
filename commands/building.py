@@ -76,12 +76,11 @@ class ZEdit(Command):
 
     def func(self, character, args, text):
         z = character.location.zone
-        if args.name:
-            z.name = args.name
-        character.notify(f'Name: {z.name}.')
-        if args.description:
-            z.description = args.description
-        character.notify(f'Description: {z.description}')
+        for name in ('name', 'description'):
+            value = getattr(args, name)
+            if value:
+                setattr(z, name, value)
+            character.notify(f'{name.title()}: {getattr(z, name)}')
         if args.builder:
             obj = character.get_single_match(args.builder)
             if obj is not None:
@@ -90,3 +89,37 @@ class ZEdit(Command):
                 else:
                     self.exit(message=f'{obj} is not a character.')
         character.notify(f'Builder: {z.builder}.')
+
+
+class REdit(Command):
+    """Edit the current room."""
+
+    def on_init(self):
+        self.aliases.append('@redit')
+        self.builder = True
+        self.add_argument('-n', '--name', help='New name for the room')
+        self.add_argument(
+            '-d', '--description', help='New description for the room'
+        )
+        for name in ('x', 'y', 'z'):
+            self.add_argument(
+                f'-{name}', type=int,
+                help=f'New {name} coordinate for the room'
+            )
+        for name in ('lit', 'safe', 'regain'):
+            self.add_argument(
+                f'--{name}', type=int, help=f'New {name} value for this room'
+            )
+
+    def func(self, character, args, text):
+        for name in (
+            'name', 'description', 'x', 'y', 'z', 'lit', 'safe', 'regain'
+        ):
+            value = getattr(args, name)
+            if value or (name in ('lit', 'safe') and value is not None):
+                if name in ('lit', 'safe'):
+                    value = bool(value)
+                setattr(character.location, name, value)
+            character.notify(
+                f'{name.title()}: {getattr(character.location, name)}'
+            )
