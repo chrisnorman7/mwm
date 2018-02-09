@@ -32,6 +32,7 @@ logger.info('Commands loaded: %d.', len(commands_table))
 class Protocol(LineReceiver):
     def connectionMade(self):
         self.object_id = None
+        self.intercept = None
         peer = self.transport.getPeer()
         self.host = peer.host
         self.port = peer.port
@@ -69,10 +70,17 @@ class Protocol(LineReceiver):
         """Send a string of text to this connection."""
         self.sendLine(string.encode())
 
+    def intercept(self, i):
+        """Intercept this connection with an instance of Intercept i."""
+        self.intercept = i
+        i.connection = self
+
     def lineReceived(self, line):
         """A line was received."""
         line = line.decode(encoding, 'replace')
         with session() as s:
+            if self.intercept is not None:
+                return self.intercept.feed(line)
             if self.username is None:
                 self.username = line.lower()
                 if line == config.new_character_command:

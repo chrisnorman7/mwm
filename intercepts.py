@@ -23,4 +23,5 @@ class Intercept:
             if self.multiline:
                 # We don't want the end character in the buffer.
                 self.lines.pop()
+            self.connection.intercept = None
             self.func('\n'.join(self.lines), *self.args, **self.kwargs)
