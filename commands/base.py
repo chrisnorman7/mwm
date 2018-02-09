@@ -26,6 +26,7 @@ class Command(ArgumentParser):
         super().__init__(*args, **kwargs)
         self.builder = False
         self.admin = False
+        self.programmer = False
         self.aliases = []
         self.on_init()
 
@@ -71,7 +72,7 @@ class Command(ArgumentParser):
     def allowed(self, character):
         """Returns True if character is allowed to use this command, False
         otherwise."""
-        for perm in ('admin', 'builder'):
+        for perm in ('builder', 'admin', 'Programmer'):
             if getattr(self, perm) > getattr(character, perm):
                 return False
         return True

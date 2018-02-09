@@ -134,7 +134,8 @@ def finalise_db():
         if not Character.count():
             r = Room.first()
             c = Character(
-                builder=True, admin=True, name='Wizard', location_id=r.id
+                programmer=True, builder=True, admin=True, name='Wizard',
+                location_id=r.id
             )
             password = c.randomise_password()
             logger.info(

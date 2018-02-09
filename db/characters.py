@@ -58,6 +58,7 @@ class Character(
     connected = Column(Boolean, nullable=False, default=False)
     builder = Column(Boolean, nullable=False, default=False)
     admin = Column(Boolean, nullable=False, default=False)
+    programmer = Column(Boolean, nullable=False, default=False)
     mobile = Column(Boolean, nullable=False, default=False)
     hitpoints = Column(Integer, nullable=True)
     mana = Column(Integer, nullable=True)
