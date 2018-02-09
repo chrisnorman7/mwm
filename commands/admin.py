@@ -18,7 +18,7 @@ class Eval(Command):
     def func(self, character, args, text):
         try:
             with manage_environment(character=character) as lua:
-                character.notify(str(lua.eval(text)))
+                character.notify(repr(lua.eval(text)))
         except Exception as e:
             character.notify(str(e))
             logger.exception(e)
