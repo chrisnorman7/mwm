@@ -1,12 +1,16 @@
 """Boring database tests."""
 
 from db import (
-    Room, Character, session, Exit, Object, Guild, GuildSecondary, Direction
+    Room, Character, session, Exit, Object, Guild, GuildSecondary, Direction,
+    Zone
 )
 
 
 with session() as s:
-    r = Room(name='Test Room')
+    z = Zone(name='Test')
+    s.add(z)
+    s.commit()
+    r = Room(name='Test Room', zone_id=z.id)
     c = Character(name='Test Player', location=r)
     s.add_all((c, r))
     s.commit()
