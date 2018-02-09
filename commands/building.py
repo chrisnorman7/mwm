@@ -36,7 +36,9 @@ class Dig(Command):
         x, y, z = d.coordinates_from(character.location.coordinates)
         r = Room.query(x=x, y=y, z=z).first()
         if r is None:
-            r = Room(name=title, x=x, y=y, z=z)
+            r = Room(
+                name=title, x=x, y=y, z=z, zone_id=character.location.zone_id
+            )
             s.add(r)
             s.commit()
             msg = f'Created room {r}.'
