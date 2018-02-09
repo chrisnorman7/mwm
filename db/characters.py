@@ -38,6 +38,12 @@ class StatProperty(property):
         setattr(instance, self.name, value)
 
 
+class Race(Base, NameDescriptionMixin):
+    """A race for this character."""
+
+    __tablename__ = 'races'
+
+
 class Character(
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
     LocationMixin, StatisticsMixin, InvisibleMixin
@@ -47,6 +53,8 @@ class Character(
     __tablename__ = 'characters'
     gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
     gender = relationship('Gender', backref='objects')
+    race_id = Column(Integer, ForeignKey('races.id'), nullable=True)
+    race = relationship('Race', backref='characters')
     connected = Column(Boolean, nullable=False, default=False)
     builder = Column(Boolean, nullable=False, default=False)
     admin = Column(Boolean, nullable=False, default=False)
