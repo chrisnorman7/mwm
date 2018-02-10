@@ -145,7 +145,7 @@ class Add_Gender(Command):
         for name, description in pronouns:
             self.valid_attribute_names.append(name)
             self.add_argument(
-                name, help=f'{self.get_readable_name(name)}: {description}'
+                name, help=f'{self.get_readable_name(name)} ({description})'
             )
 
     def func(self, character, args, text):
