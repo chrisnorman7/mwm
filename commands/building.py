@@ -1,7 +1,7 @@
 """Building commands."""
 
 from .base import Command
-from db import Character, Room, Exit, Session as s
+from db import Gender, Character, Room, Exit, Session as s
 
 
 class Dig(Command):
@@ -125,3 +125,39 @@ class REdit(Command):
             character.notify(
                 f'{name.title()}: {getattr(character.location, name)}'
             )
+
+
+class Add_Gender(Command):
+    """Add a gender."""
+
+    def on_init(self):
+        self.builder = True
+        self.add_argument('name', help='The name for the new gender')
+        # Skip name since we use it explicitly:
+        self.valid_attribute_names = []
+        pronouns = (
+            ('subjective', 'he, she, or it'),
+            ('objective', 'him, her, or it'),
+            ('possessive_adjective', 'his, her, or its'),
+            ('possessive_noun', 'his, hers, or its'),
+            ('reflexive', 'himself, herself, or itself')
+        )
+        for name, description in pronouns:
+            self.valid_attribute_names.append(name)
+            self.add_argument(
+                name, help=f'{self.get_readable_name(name)}: {description}'
+            )
+
+    def func(self, character, args, text):
+        g = Gender(name=args.name)
+        character.notify(f'Creating gender: {g.name}.')
+        for name in self.valid_attribute_names:
+            setattr(g, name, getattr(args, name))
+            character.notify(
+                f'{self.get_readable_name(name)}: {getattr(g, name)}'
+            )
+        s.add(g)
+
+    def get_readable_name(self, name):
+        """Return the readable form of name."""
+        return name.replace('_', ' ').title()
