@@ -8,7 +8,7 @@ from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 import commands
 from commands.base import Command
-from db import Character, session, RoomCommand
+from db import Character, session, RoomCommand, Room
 from config import config
 from programming import manage_environment
 
