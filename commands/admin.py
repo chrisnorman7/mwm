@@ -4,6 +4,7 @@ import logging
 from programming import manage_environment
 from intercepts import Intercept
 from db import Character, Room, RoomCommand, Session as s
+from config import config
 from commands.base import Command
 
 logger = logging.getLogger(__name__)
@@ -90,4 +91,24 @@ class Room_Command(Command):
                 character.id
             )
         )
+        character.connection.set_intercept(i)
+
+
+class MOTD(Command):
+    """Set the message of the day."""
+
+    def on_init(self):
+        self.admin = True
+
+    def set_motd(self, text, character_id):
+        """Set the MOTD."""
+        char = Character.get(character_id)
+        if not char.admin:
+            return char.notify('You are not an admin.')
+        config.motd = text
+        char.notify('MOTD set.')
+
+    def func(self, character, args, text):
+        i = Intercept(self.set_motd, args=[character.id], multiline=True)
+        character.notify('Enter the text of the motd.')
         character.connection.set_intercept(i)
