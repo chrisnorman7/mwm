@@ -107,6 +107,7 @@ class Protocol(LineReceiver):
                         s.add(c)
                         s.commit()
                         self.object = c
+                        self.logger.info('Created character %s.', c)
                         self.notify(
                             f'Your new password is {c.randomise_password()}.'
                         )
