@@ -30,6 +30,12 @@ class _Base:
         return res + ', '.join(strings) + ')'
 
     @classmethod
+    def lua_query(self, table):
+        """Return the resulting objects as a list. Accepts a single dictionary-
+        like object as an argument."""
+        return self.query(**table).all()
+
+    @classmethod
     def count(cls):
         return Session.query(cls).count()
 

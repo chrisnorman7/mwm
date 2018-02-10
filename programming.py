@@ -2,8 +2,12 @@
 
 from contextlib import contextmanager
 from lupa import LuaRuntime
+import db
+
 
 lua = LuaRuntime()
+
+lua.globals()['db'] = db
 
 
 @contextmanager
