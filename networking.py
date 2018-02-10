@@ -70,7 +70,7 @@ class Protocol(LineReceiver):
         """Send a string of text to this connection."""
         self.sendLine(string.encode())
 
-    def intercept(self, i):
+    def set_intercept(self, i):
         """Intercept this connection with an instance of Intercept i."""
         self.intercept = i
         i.connection = self
