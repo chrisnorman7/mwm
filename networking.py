@@ -105,6 +105,7 @@ class Protocol(LineReceiver):
                     else:
                         c = Character(name=line.title())
                         s.add(c)
+                        c.location = Room.first()
                         s.commit()
                         self.object = c
                         self.logger.info('Created character %s.', c)
