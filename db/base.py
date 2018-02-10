@@ -7,8 +7,35 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from programming import lua
 from .engine import engine
 from .session import Session
+
+
+class MatchError(Exception):
+    """Match error."""
+
+    def __init__(self, *args, **kwargs):
+        """Format self.__doc__ with args and kwargs."""
+        return super().__init__(self.__doc__.format(*args, **kwargs))
+
+
+class NoMatch(MatchError):
+    """I don't see "{}" here."""
+
+
+class MultipleMatches(MatchError):
+    """I don't know which "{}" you mean."""
+
+
+def single_match(string, results):
+    """Get a single match from a list."""
+    if len(results) == 1:
+        return results[0]
+    if not results:
+        raise NoMatch(string)
+    else:
+        raise MultipleMatches(string)
 
 
 class _Base:
@@ -31,9 +58,15 @@ class _Base:
 
     @classmethod
     def lua_query(self, table):
-        """Return the resulting objects as a list. Accepts a single dictionary-
+        """Return the resulting objects as a table. Accepts a single dictionary-
         like object as an argument."""
-        return self.query(**table).all()
+        q = self.query(**table)
+        d = dict(single_match=single_match)
+        for name in dir(q):
+            if not name.startswith('_'):
+                d[name] = getattr(q, name)
+        d['table'] = lambda: lua.table(*q.all())
+        return lua.table(**d)
 
     @classmethod
     def count(cls):
