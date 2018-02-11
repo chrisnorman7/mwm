@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
-    'dump_db', 'load_db', 'get_classes',  'Guild', 'GuildSecondary',
+    'dump_db', 'load_db', 'get_classes', 'Guild', 'GuildSecondary',
     'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
     'Direction', 'Zone', 'Race', 'RoomCommand', 'MatchError', 'single_match'
 ]
