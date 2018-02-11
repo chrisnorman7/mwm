@@ -26,7 +26,7 @@ for x in dir(commands):
             alias = alias.lower().replace('_', '-')
             logger.debug('%s => %r.', alias, cmd)
             commands_table[alias] = cmd
-logger.info('Commands loaded: %d.', len(commands_table))
+logger.info('Commands loaded: %d.', len(set(commands_table.values())))
 
 
 class Protocol(LineReceiver):
