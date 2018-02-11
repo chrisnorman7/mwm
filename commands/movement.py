@@ -27,7 +27,7 @@ class Go(Command):
         else:
             msg = socials.get_strings(
                 x.arrive_msg, [character], direction=d.opposite_string
-                )
+            )
         x.target.broadcast(msg)
         character.location = x.target
         character.show_location()
