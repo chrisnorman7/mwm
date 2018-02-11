@@ -191,3 +191,13 @@ class Zone(Command):
         character.notify(z.description)
         character.notify(f'Builder: {z.builder}')
         character.notify(f'Rooms: {len(z.rooms)}')
+
+
+class Gold(Command):
+    """Shows how much money you are carrying."""
+
+    def on_init(self):
+        self.aliases.extend(['money', 'cash', 'purse'])
+
+    def func(self, character, args, text):
+        character.notify(f'You are carrying {character.gold} gold.')

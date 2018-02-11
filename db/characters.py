@@ -68,6 +68,7 @@ class Character(
         Message, nullable=False,
         default='%1n|normal arrive%1s in a scattering of pixels.'
     )
+    gold = Column(Integer, nullable=False, default=0)
     gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
     gender = relationship('Gender', backref='objects')
     race_id = Column(Integer, ForeignKey('races.id'), nullable=True)
