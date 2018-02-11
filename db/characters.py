@@ -39,7 +39,7 @@ class StatProperty(property):
         setattr(instance, self.name, value)
 
 
-class Race(Base, NameDescriptionMixin):
+class Race(Base, NameDescriptionMixin, LocationMixin):
     """A race for this character."""
 
     __tablename__ = 'races'
