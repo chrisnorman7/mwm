@@ -1,7 +1,7 @@
 """Administrative commands."""
 
 import logging
-from programming import manage_environment
+from programming import manage_environment, as_function
 from intercepts import Intercept
 from db import Character, Room, RoomCommand, Session as s
 from config import config
@@ -49,11 +49,13 @@ class Exec(Command):
 
     def func(self, character, args, text):
         try:
-            with manage_environment(
-                character=character, here=character.location
-            ) as lua:
-                lua.execute(text)
-                character.notify('Done.')
+            character.notify(
+                repr(
+                    as_function(
+                        text, character=character, here=character.location
+                    )
+                )
+            )
         except Exception as e:
             character.notify(str(e))
             logger.exception(e)

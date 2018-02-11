@@ -22,3 +22,10 @@ def manage_environment(**kwargs):
     finally:
         for name, value in kwargs.items():
             g[name] = None
+
+
+def as_function(code, **kwargs):
+    """Execute code like a function returning its value. Use manage_environment
+    with the provided keyword arguments."""
+    with manage_environment(**kwargs) as runtime:
+        return runtime.execute(code)
