@@ -3,7 +3,7 @@
 import logging
 from programming import manage_environment, as_function
 from intercepts import Intercept
-from db import Character, Room, RoomCommand, Session as s
+from db import Character, Race, Room, RoomCommand, Session as s
 from db.base import Base, Code, single_match
 from config import config
 from permissions import check_programmer
@@ -215,3 +215,38 @@ class Program(Command):
             character.notify(f'You are programming "{prop}" of {thing}.')
             character.notify('Enter lines of code.')
             character.connection.set_intercept(i)
+
+
+class Create_Race(Command):
+    """Create a new race."""
+
+    def on_init(self):
+        self.admin = True
+        self.add_argument('name', help='The name for the new race')
+        self.add_argument(
+            'description', help='The description for the new race'
+        )
+
+    def func(self, character, args, text):
+        r = Race(
+            name=args.name, _description=args.description,
+            location_id=character.location_id
+        )
+        s.add(r)
+        s.commit()
+        character.notify(f'Created race {r}.')
+
+
+class Set_Race_Home(Command):
+    """Set this room to be the home for a particular race."""
+
+    def on_init(self):
+        self.admin = True
+        self.add_argument('race', help='The race to set the home for')
+
+    def func(self, character, args, text):
+        r = Race.query(name=args.race).first()
+        if r is None:
+            self.exit(message=f'No race named "{args.race}" found.')
+        r.location = character.location
+        character.notify('Home set.')

@@ -1,6 +1,9 @@
 """All commands should be imported here."""
 
-from .admin import Eval, Exec, Room_Command, MOTD, Edit_Room_Command, Program
+from .admin import (
+    Eval, Exec, Room_Command, MOTD, Edit_Room_Command, Program, Create_Race,
+    Set_Race_Home
+)
 from .socials import Say, Emote, Stand, Rest
 from .misc import (
     Quit, Password, Inventory, Commands, Shutdown, Abort_Shutdown, Look, Exits
@@ -12,5 +15,6 @@ __all__ = [
     'Say', 'Quit', 'Password', 'Inventory', 'Commands', 'Shutdown',
     'Abort_Shutdown', 'Go', 'Emote', 'Dig', 'Eval', 'Exec', 'Look', 'Exits',
     'ZEdit', 'REdit', 'Room_Command', 'MOTD', 'Add_Gender',
-    'Edit_Room_Command', 'Program', 'Create_Zone', 'Stand', 'Rest'
+    'Edit_Room_Command', 'Program', 'Create_Zone', 'Stand', 'Rest',
+    'Create_Race', 'Set_Race_Home'
 ]
