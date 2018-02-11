@@ -113,6 +113,8 @@ class Character(
         """Show this character where they are."""
         self.notify(f'[{self.location.zone.name}: {self.location.name}]')
         self.notify(self.location.description)
+        for c in self.location.characters:
+            self.notify(f'{c.name} is here.')
         if not self.location.exits:
             self.notify('You see no obvious exits.')
         else:
