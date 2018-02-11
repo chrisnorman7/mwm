@@ -85,6 +85,15 @@ class Room(Base, NameDescriptionMixin, CoordinatesMixin):
             or_(Direction.name == string, Direction.short_name == string)
         ).first()
 
+    def match_exit(self, name):
+        """Try to find an exit in the current room with the given name."""
+        x = Exit.query(location_id=self.id, name=name).first()
+        if x is None:
+            d = self.match_direction(name)
+            if d is not None:
+                return Exit.query(location_id=self.id, name=d.name).first()
+        return x
+
 
 class Exit(Base, NameDescriptionMixin, LocationMixin):
     """Link rooms together."""
