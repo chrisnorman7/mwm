@@ -4,7 +4,7 @@ import logging
 from programming import manage_environment, as_function
 from intercepts import Intercept
 from db import Character, Race, Room, RoomCommand, Session as s
-from db.base import Base, Code, single_match
+from db.base import Base, Code, Message as _Message, single_match
 from config import config
 from permissions import check_programmer
 from .base import Command
@@ -250,3 +250,30 @@ class Set_Race_Home(Command):
             self.exit(message=f'No race named "{args.race}" found.')
         r.location = character.location
         character.notify('Home set.')
+
+
+class Message(Command):
+    """Set a message on a given object."""
+
+    def on_init(self):
+        self.admin = True
+        self.add_argument('thing', help='thing.name')
+        self.add_argument('value', help='The value of the message')
+        self.aliases.append('msg')
+
+    def func(self, character, args, text):
+        split = args.thing.split('.')
+        if len(split) != 2:
+            self.exit(message=f'Invalid specifier "{args.thing}".')
+        name, prop = split
+        thing = single_match(name, character.match(name))
+        if prop not in thing.__class__.__table__.c:
+            self.exit(message=f'Invalid property name "{prop}".')
+        col = thing.__class__.__table__.c[prop]
+        if col.type.__class__ is not _Message:
+            self.exit(message=f'Property "{prop}" is not a message.')
+        if not args.value and not col.nullable:
+            self.exit(message='This message cannot be blank.')
+        character.notify(f'Old value: {getattr(thing, prop)}')
+        setattr(thing, prop, args.value or None)
+        character.notify(f'New value: {getattr(thing, prop)}')
