@@ -28,6 +28,6 @@ class Go(Command):
             msg = socials.get_strings(
                 x.arrive_msg, [character], direction=d.opposite_string
             )
-        x.target.broadcast(msg)
+        x.target.broadcast(msg[-1])
         character.move(x.target)
         character.show_location()

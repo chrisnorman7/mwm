@@ -133,8 +133,6 @@ def finalise_db():
         if not Room.count():
             s.add(Room(name='The First Room', zone_id=Zone.first().id))
             s.commit()
-        if not Gender.count():
-            s.add(Gender(name='Neutral'))
         if not Character.count():
             r = Room.first()
             c = Character(
