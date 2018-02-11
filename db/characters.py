@@ -146,11 +146,15 @@ class Character(
         elif name == 'here':
             return [self.location]
         else:
-            return [
+            results = [
                 x for x in self.get_visible() if x.name.lower().startswith(
                     name
                 )
             ]
+            x = self.location.match_exit(name)
+            if x is not None:
+                results.append(x)
+            return results
 
     def match_single(self, string):
         """Return only a single match. Raise AmbiguousMatchError if more than
