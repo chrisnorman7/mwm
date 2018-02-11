@@ -179,3 +179,74 @@ As previously stated, the database is where the bulk of the magic (no pun intend
 ### What's available
 
 Instead of me writing a list here, execute the file table.py to see what is available.
+
+## Programming
+
+For programmers (rather than developers), the internal language use by MWM is [Lua](https://www.lua.org/). Instead of a MOO-style approach I have gone for more of an event-driven feel.
+
+As far as developing the MWM codebase goes, an event is defined as a column in a given table of the database which uses `db.base.Code` as its type:
+
+```
+event = Column(Code, nullable=True)
+```
+
+Programs like this can be programmed or cleared with the `program` (or `@program`) command.
+
+### Events Introduction
+
+The wonderful thing about [lupa](https://github.com/scoder/lupa) which is the pythonic interface to Lua I am using is that the execute function works like Python's [execute](https://docs.python.org/2.0/ref/exec.html) builtin except that it can return code. As such we can use the return value from a given event going forward.
+
+Most if not all events are / will be called using the `programming.as_function` method.
+
+```
+assert = as_function('return 5') == 5
+```
+
+You can pass extra arguments to `as_function` which will be added to the lua globals and then removed once the code has finished running.
+
+```
+thing = object()
+assert as_function('return thing', thing=thing) is thing
+```
+
+You have to be careful however as some of Python's objects might not work as you expect, particularly those returned by [sqlalchemy](http://docs.sqlalchemy.org/en/latest/orm/query.html).
+
+To this end, there is a special `lua_query` function which returns a dictionary to replace the query object usually resulting from a call to `Session.query`.
+
+Furthermore, to ensure events are called, use the functions outlined below:
+
+#### Moving characters
+
+Instead of setting `character.location` manually, use `character.move(destination)`.
+
+### Event List
+
+What follows is a (hopefully complete) list of events used internally. Of course you could add your own to the database and use them as you like.
+
+All events are called with a character instance available to them. All other locals are shown.
+
+#### Exit.can_use
+
+Called before an exit is used. Should return `true` if the character is allowed to pass.
+
+Once the return value is checked nothing else happens, so if the character is not allowed to pass the event should react accordingly, telling them why not ETC.
+
+#### Room.on_enter
+
+Called before a character has been moved to this room. Return value is ignored.
+
+##### Locals
+
+###### this
+
+The room in question.
+
+#### Room.on_exit
+
+Called before a character leaves the room.
+
+##### Locals
+
+###### this
+
+The room in question.
