@@ -302,3 +302,28 @@ class Teleport(Command):
         r.broadcast(msg)
         character.move(r)
         character.show_location()
+
+
+class Config(Command):
+    """Configure the server (may require restart)."""
+
+    def on_init(self):
+        self.admin = True
+        self.aliases.append('@config')
+        self.add_argument('-p', '--port', type=int, help='Server port')
+        self.add_argument('-i', '--interface', help='Interface to bind to')
+        self.add_argument('-f', '--db-file', help='DB file')
+        self.add_argument(
+            '-n', '--new-character-command',
+            help='What to type to create a new character'
+        )
+
+    def func(self, character, args, text):
+        for name in dir(args):
+            if name.startswith('_'):
+                continue
+            value = getattr(args, name)
+            if value is None:
+                value = getattr(config, name)
+            setattr(config, name, value)
+            character.notify(f'{name} => {getattr(config, name)}')
