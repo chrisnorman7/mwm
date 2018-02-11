@@ -127,7 +127,7 @@ class REdit(Command):
             )
 
 
-class Add_Gender(Command):
+class Create_Gender(Command):
     """Add a gender."""
 
     def on_init(self):
