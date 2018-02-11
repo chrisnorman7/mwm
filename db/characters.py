@@ -122,7 +122,10 @@ class Character(
         self.notify(f'[{self.location.zone.name}: {self.location.name}]')
         self.notify(self.location.description)
         for c in self.location.characters:
-            self.notify(f'{c.name} is {"resting " if c.resting else ""}here.')
+            if c is not self:
+                self.notify(
+                    f'{c.name} is {"resting " if c.resting else ""}here.'
+                )
         for obj in self.location.objects:
             self.notify(f'{obj.name} is here.')
         if not self.location.exits:
