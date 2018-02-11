@@ -220,3 +220,11 @@ class CodeMixin:
     """Add code to anything."""
 
     code = Column(Code, nullable=False)
+
+
+class Message(String):
+    """A message."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('length', 150)
+        super().__init__(*args, **kwargs)

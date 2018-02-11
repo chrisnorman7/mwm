@@ -5,7 +5,7 @@ from sqlalchemy import Column, Boolean, Integer, ForeignKey, String, or_
 from sqlalchemy.orm import relationship
 from .base import (
     Base, NameMixin, NameDescriptionMixin, LocationMixin, CoordinatesMixin,
-    Code, CodeMixin
+    Code, CodeMixin, Message
 )
 from .session import Session
 
@@ -106,10 +106,10 @@ class Exit(Base, NameDescriptionMixin, LocationMixin):
         'Room', backref='entrances', foreign_keys=[target_id]
     )
     use_msg = Column(
-        String(150), nullable=False, default='%1n|normal {style} %2n.'
+        Message, nullable=False, default='%1n|normal {style} %2n.'
     )
     arrive_msg = Column(
-        String(150), nullable=False, default='%1n arrives from {direction}.'
+        Message, nullable=False, default='%1n arrives from {direction}.'
     )
     can_use = Column(Code, nullable=True)
 

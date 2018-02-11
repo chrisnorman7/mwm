@@ -3,7 +3,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from .base import Base, NameDescriptionMixin, LevelMixin
+from .base import Base, NameDescriptionMixin, LevelMixin, Message
 
 
 class SkillMixin:
@@ -23,7 +23,7 @@ class ActiveSkillMixin(SkillMixin):
     hitpoints = Column(Integer, nullable=False, default=0)
     damage = Column(Integer, nullable=False, default=0)
     use_msg = Column(
-        String(100), nullable=False, default='%1n use%1s an untitled skill.'
+        Message, nullable=False, default='%1n use%1s an untitled skill.'
     )
     on_use = Column(
         String(10000), nullable=False,
