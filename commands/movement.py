@@ -1,7 +1,7 @@
 """Movement commands."""
 
 from .base import Command
-from db import Exit, Direction
+from db import Direction
 from socials import socials
 from programming import as_function
 
@@ -13,9 +13,7 @@ class Go(Command):
         self.add_argument('direction', help='The direction to go in.')
 
     def func(self, character, args, rest):
-        x = Exit.query(
-            location_id=character.location_id, name=args.direction.lower()
-        ).first()
+        x = character.location.match_exit(args.direction)
         if x is None:
             self.exit(message='You cannot go that way.')
         if x.can_use is not None and not as_function(
