@@ -103,7 +103,7 @@ class Character(
             self.connection.object = None
             self.connection.transport.loseConnection()
         connections[self.id] = connection
-        self.notify(f'Welcome back, {self.name}.')
+        self.notify(f'Welcome, {self.name}.')
 
     def get_gender(self):
         if self.gender_id is None:
