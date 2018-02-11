@@ -90,6 +90,10 @@ def load_db():
 def finalise_db():
     """Bootstrap an empty database."""
     with session() as s:
+        for cls in get_classes():
+            logger.info(
+                '%s: %d', cls.__table__.name.replace('_', ' '), cls.count()
+            )
         if not Direction.count():
             Direction.create(
                 'north', x=0, y=1, z=0, opposite_string='the south'
