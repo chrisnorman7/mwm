@@ -1,5 +1,6 @@
 """Provides the lua environment."""
 
+import logging
 from contextlib import contextmanager
 from lupa import LuaRuntime
 import db
@@ -8,8 +9,10 @@ from permissions import (
 )
 
 
+logger = logging.getLogger(__name__)
 lua = LuaRuntime()
 
+lua.globals()['logger'] = logger
 for thing in (
     db, check_privileges, check_builder, check_admin, check_programmer
 ):
