@@ -2,7 +2,7 @@
 
 from .admin import (
     Eval, Exec, Room_Command, MOTD, Edit_Room_Command, Program, Create_Race,
-    Set_Race_Home, Message
+    Set_Race_Home, Message, Teleport
 )
 from .socials import Say, Emote, Stand, Rest
 from .misc import (
@@ -16,5 +16,5 @@ __all__ = [
     'Abort_Shutdown', 'Go', 'Emote', 'Dig', 'Eval', 'Exec', 'Look', 'Exits',
     'ZEdit', 'REdit', 'Room_Command', 'MOTD', 'Create_Gender',
     'Edit_Room_Command', 'Program', 'Create_Zone', 'Stand', 'Rest',
-    'Create_Race', 'Set_Race_Home', 'Message'
+    'Create_Race', 'Set_Race_Home', 'Message', 'Teleport'
 ]

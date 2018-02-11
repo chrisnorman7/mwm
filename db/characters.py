@@ -60,6 +60,14 @@ class Character(
     stand_msg = Column(
         Message, nullable=False, default='%1n|normal stand%1s slowly.'
     )
+    teleport_leave_msg = Column(
+        Message, nullable=False,
+        default='%1n|normal wink%1s out of existance in a scattring of pixels.'
+    )
+    teleport_arrive_msg = Column(
+        Message, nullable=False,
+        default='%1n|normal arrive%1s in a scattering of pixels.'
+    )
     gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
     gender = relationship('Gender', backref='objects')
     race_id = Column(Integer, ForeignKey('races.id'), nullable=True)

@@ -8,6 +8,7 @@ from db.base import Base, Code, Message as _Message, single_match
 from config import config
 from permissions import check_programmer
 from .base import Command
+from socials import socials
 
 logger = logging.getLogger(__name__)
 
@@ -277,3 +278,27 @@ class Message(Command):
         character.notify(f'Old value: {getattr(thing, prop)}')
         setattr(thing, prop, args.value or None)
         character.notify(f'New value: {getattr(thing, prop)}')
+
+
+class Teleport(Command):
+    """Teleport to a new room."""
+
+    def on_init(self):
+        self.aliases.extend(['tele', '@teleport', '@tele'])
+        self.admin = True
+        self.builder = True
+        self.add_argument(
+            'id', type=int, help='The id of the room to teleport to'
+        )
+
+    def func(self, character, args, text):
+        r = Room.get(args.id)
+        if r is None:
+            self.exit(message='Invalid room id.')
+        character.do_social(character.teleport_leave_msg)
+        msg = socials.get_strings(
+            character.teleport_arrive_msg, [character]
+        )[-1]
+        r.broadcast(msg)
+        character.move(r)
+        character.show_location()
