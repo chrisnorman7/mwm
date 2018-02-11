@@ -8,6 +8,7 @@ from .base import (
 )
 from socials import socials
 from util import english_list
+from programming import as_function
 
 connections = {}
 
@@ -63,6 +64,17 @@ class Character(
     hitpoints = Column(Integer, nullable=True)
     mana = Column(Integer, nullable=True)
     endurance = Column(Integer, nullable=True)
+
+    def move(self, where):
+        """Used to move a character, calls appropriate events on old and new
+        rooms."""
+        if self.location is not None and self.location.on_exit is not None:
+            as_function(
+                self.location.on_exit, character=self, this=self.location
+            )
+        if where.on_enter is not None:
+            as_function(where.on_enter, character=self, this=where)
+        self.location = where
 
     @property
     def connection(self):

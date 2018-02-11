@@ -69,6 +69,8 @@ class Room(Base, NameDescriptionMixin, CoordinatesMixin):
     regain = Column(Integer, nullable=False, default=1)
     zone_id = Column(Integer, ForeignKey('zones.id'), nullable=False)
     zone = relationship('Zone', backref='rooms')
+    on_enter = Column(Code, nullable=True)
+    on_exit = Column(Code, nullable=True)
 
     @property
     def contents(self):
