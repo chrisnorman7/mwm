@@ -109,7 +109,7 @@ class Exit(Base, NameDescriptionMixin, LocationMixin):
         Message, nullable=False, default='%1n|normal {style} %2n.'
     )
     arrive_msg = Column(
-        Message, nullable=False, default='%1n arrives from {direction}.'
+        Message, nullable=False, default='%1n|normal arrives from {direction}.'
     )
     can_use = Column(Code, nullable=True)
 

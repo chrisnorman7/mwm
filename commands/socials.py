@@ -30,3 +30,23 @@ class Emote(Command):
         )
         perspectives.remove(character)
         character.do_social(string, _others=perspectives)
+
+
+class Stand(Command):
+    """Get to your feet."""
+
+    def func(self, character, args, text):
+        if not character.resting:
+            self.exit(message='You are already standing.')
+        character.do_social(character.stand_msg)
+        character.resting = False
+
+
+class Rest(Command):
+    """Sit down to rest."""
+
+    def func(self, character, args, text):
+        if character.resting:
+            self.exit(message='You are already resting.')
+        character.do_social(character.rest_msg)
+        character.resting = True

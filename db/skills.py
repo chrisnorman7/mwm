@@ -23,7 +23,7 @@ class ActiveSkillMixin(SkillMixin):
     hitpoints = Column(Integer, nullable=False, default=0)
     damage = Column(Integer, nullable=False, default=0)
     use_msg = Column(
-        Message, nullable=False, default='%1n use%1s an untitled skill.'
+        Message, nullable=False, default='%1n|normal use%1s an untitled skill.'
     )
     on_use = Column(
         String(10000), nullable=False,

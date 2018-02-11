@@ -1,10 +1,10 @@
 """Provides the Character class."""
 
-from sqlalchemy import Column, Boolean, Integer, ForeignKey, String
+from sqlalchemy import Column, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import (
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
-    LocationMixin, StatisticsMixin, InvisibleMixin
+    LocationMixin, StatisticsMixin, InvisibleMixin, Message
 )
 from socials import socials
 from util import english_list
@@ -53,7 +53,13 @@ class Character(
 
     __tablename__ = 'characters'
     resting = Column(Boolean, nullable=False, default=False)
-    walk_style = Column(String(20), nullable=False, default='walk%1s')
+    walk_style = Column(Message, nullable=False, default='walk%1s')
+    rest_msg = Column(
+        Message, nullable=False, default='%1n|normal sit%1s down to rest.'
+    )
+    stand_msg = Column(
+        Message, nullable=False, default='%1n|normal stand%1s slowly.'
+    )
     gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
     gender = relationship('Gender', backref='objects')
     race_id = Column(Integer, ForeignKey('races.id'), nullable=True)
