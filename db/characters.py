@@ -52,6 +52,7 @@ class Character(
     """A player instance."""
 
     __tablename__ = 'characters'
+    resting = Column(Boolean, nullable=False, default=False)
     gender_id = Column(Integer, ForeignKey('genders.id'), nullable=True)
     gender = relationship('Gender', backref='objects')
     race_id = Column(Integer, ForeignKey('races.id'), nullable=True)
@@ -114,7 +115,7 @@ class Character(
         self.notify(f'[{self.location.zone.name}: {self.location.name}]')
         self.notify(self.location.description)
         for c in self.location.characters:
-            self.notify(f'{c.name} is here.')
+            self.notify(f'{c.name} is {"resting " if c.resting else ""}here.')
         for obj in self.location.objects:
             self.notify(f'{obj.name} is here.')
         if not self.location.exits:
