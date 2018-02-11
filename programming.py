@@ -3,11 +3,17 @@
 from contextlib import contextmanager
 from lupa import LuaRuntime
 import db
+from permissions import (
+    check_privileges, check_builder, check_admin, check_programmer
+)
 
 
 lua = LuaRuntime()
 
-lua.globals()['db'] = db
+for thing in (
+    db, check_privileges, check_builder, check_admin, check_programmer
+):
+    lua.globals()[thing.__name__] = thing
 
 
 @contextmanager
