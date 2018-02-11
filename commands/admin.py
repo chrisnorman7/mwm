@@ -195,7 +195,7 @@ class Program(Command):
             self.exit(message=f'Invalid specifier "{args.thing}".')
         name, prop = split
         thing = single_match(name, character.match(name))
-        if not hasattr(thing, prop):
+        if prop not in thing.__class__.__table__.c:
             self.exit(message=f'Invalid property name "{prop}".')
         col = thing.__class__.__table__.c[prop]
         if col.type.__class__ is not Code:
