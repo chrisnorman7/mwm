@@ -4,8 +4,10 @@ import logging
 from programming import manage_environment, as_function
 from intercepts import Intercept
 from db import Character, Room, RoomCommand, Session as s
+from db.base import Base, Code, single_match
 from config import config
-from .base import Command, CommandExit
+from permissions import check_programmer
+from .base import Command
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +16,8 @@ def get_programmer(character_id):
     """Ensure the given character is a programmer. If they are return a
     Character instance. If not raise CommandExit."""
     character = Character.get(character_id)
-    if character.programmer:
-        return character
-    character.notify('You have since been demoted.')
-    raise CommandExit()
+    check_programmer(character)
+    return character
 
 
 class Eval(Command):
@@ -152,9 +152,7 @@ class Edit_Room_Command(Command):
             cmd.description = description
             character.notify(f'Description: {cmd.description}')
         cmd.code = code
-        character.notify('<code>')
-        character.notify(cmd.code)
-        character.notify('</code>')
+        character.notify_code(cmd.code)
 
     def func(self, character, args, text):
         cmd = self.get_command(character.location_id, args.name)
@@ -164,8 +162,56 @@ class Edit_Room_Command(Command):
                 character.id),
             multiline=True
         )
-        character.notify('<code>')
-        character.notify(cmd.code)
-        character.notify('</code>')
+        character.notify_code(cmd.code)
         character.notify('Enter the new code:')
         character.connection.set_intercept(i)
+
+
+class Program(Command):
+    """Program a property of something."""
+
+    def on_init(self):
+        self.aliases.append('@program')
+        self.programmer = True
+        self.add_argument('thing', help='thing.name')
+        self.add_argument(
+            '-n', '--null', action='store_true',
+            help='Clear the code for this program'
+        )
+
+    def set_program_code(self, code, class_name, id, prop, character_id):
+        """Used by the intercept."""
+        character = get_programmer(character_id)
+        if not code.strip():
+            return character.notify('Blank code.')
+        cls = Base._decl_class_registry[class_name]
+        thing = cls.get(id)
+        setattr(thing, prop, code)
+        character.notify('Code set.')
+
+    def func(self, character, args, text):
+        split = args.thing.split('.')
+        if len(split) != 2:
+            self.exit(message=f'Invalid specifier "{args.thing}".')
+        name, prop = split
+        thing = single_match(name, character.match(name))
+        if not hasattr(thing, prop):
+            self.exit(message=f'Invalid property name "{prop}".')
+        col = thing.__class__.__table__.c[prop]
+        if col.type.__class__ is not Code:
+            self.exit(message=f'Property "{prop}" is not code.')
+        character.notify_code(getattr(thing, prop) or '')
+        if args.null:
+            if col.nullable:
+                setattr(thing, prop, None)
+                character.notify('Code cleared.')
+            else:
+                self.exit('Code for this program is mandatory.')
+        else:
+            i = Intercept(
+                self.set_program_code, multiline=True,
+                args=(thing.__class__.__name__, thing.id, prop, character.id)
+            )
+            character.notify(f'You are programming "{prop}" of {thing}.')
+            character.notify('Enter lines of code.')
+            character.connection.set_intercept(i)
