@@ -49,6 +49,12 @@ class _Base:
     def notify(self):
         """Overridden for Character instances."""
 
+    def notify_code(self, code):
+        """Saves duplicate code."""
+        self.notify('<code>')
+        self.notify(code)
+        self.notify('</code>')
+
     def __repr__(self):
         res = f'{self.__class__.__name__} ('
         strings = []
