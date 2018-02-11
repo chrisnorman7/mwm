@@ -5,7 +5,7 @@ from sqlalchemy import Column, Boolean, Integer, ForeignKey, String, or_
 from sqlalchemy.orm import relationship
 from .base import (
     Base, NameMixin, NameDescriptionMixin, LocationMixin, CoordinatesMixin,
-    CodeMixin
+    Code, CodeMixin
 )
 from .session import Session
 
@@ -100,6 +100,7 @@ class Exit(Base, NameDescriptionMixin, LocationMixin):
     arrive_msg = Column(
         String(150), nullable=False, default='%1n arrives from {direction}.'
     )
+    can_use = Column(Code, nullable=True)
 
 
 class RoomCommand(Base, NameDescriptionMixin, LocationMixin, CodeMixin):

@@ -3,6 +3,7 @@
 from .base import Command
 from db import Exit, Direction
 from socials import socials
+from programming import manage_environment
 
 
 class Go(Command):
@@ -17,6 +18,10 @@ class Go(Command):
         ).first()
         if x is None:
             self.exit(message='You cannot go that way.')
+        if x.can_use is not None:
+            with manage_environment(character=character) as lua:
+                if not lua.execute(x.can_use):
+                    return  # They cannot pass.
         character.do_social(x.use_msg, _others=[x])
         d = Direction.query(name=x.name).first()
         if d is None:

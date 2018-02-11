@@ -202,7 +202,15 @@ class CoordinatesMixin:
         self.x, self.y, self.z = value
 
 
+class Code(String):
+    """A string with a really long length."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('length', 1000000)
+        super().__init__(*args, **kwargs)
+
+
 class CodeMixin:
     """Add code to anything."""
 
-    code = Column(String(1000000), nullable=False)
+    code = Column(Code, nullable=False)
