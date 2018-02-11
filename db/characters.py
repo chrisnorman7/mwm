@@ -115,6 +115,8 @@ class Character(
         self.notify(self.location.description)
         for c in self.location.characters:
             self.notify(f'{c.name} is here.')
+        for obj in self.location.objects:
+            self.notify(f'{obj.name} is here.')
         if not self.location.exits:
             self.notify('You see no obvious exits.')
         else:
