@@ -14,7 +14,7 @@ class Go(Command):
 
     def func(self, character, args, rest):
         if character.resting:
-            self.exit('You must stand up first.')
+            self.exit(message='You must stand up first.')
         x = character.location.match_exit(args.direction)
         if x is None:
             self.exit(message='You cannot go that way.')
