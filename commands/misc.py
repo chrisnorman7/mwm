@@ -177,3 +177,17 @@ class Exits(Command):
             character.notify(
                 f'{exit.name} to {exit.target.name}: {exit.description}'
             )
+
+
+class Zone(Command):
+    """Shows information about the current zone."""
+
+    def on_init(self):
+        self.aliases.append('@zone')
+
+    def func(self, character, args, text):
+        z = character.location.zone
+        character.notify(z.name)
+        character.notify(z.description)
+        character.notify(f'Builder: {z.builder}')
+        character.notify(f'Rooms: {len(z.rooms)}')
