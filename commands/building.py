@@ -1,7 +1,7 @@
 """Building commands."""
 
 from .base import Command
-from db import Gender, Character, Room, Exit, Session as s
+from db import Gender, Character, Room, Exit, Zone, Session as s
 
 
 class Dig(Command):
@@ -161,3 +161,23 @@ class Add_Gender(Command):
     def get_readable_name(self, name):
         """Return the readable form of name."""
         return name.replace('_', ' ').title()
+
+
+class Create_Zone(Command):
+    """Create a new zone."""
+
+    def on_init(self):
+        self.builder = True
+
+    def func(self, character, args, text):
+        z = Zone(builder_id=character.id, name='New Zone #')
+        s.add(z)
+        s.commit()
+        z.name = f'{z.name}{z.id}'
+        character.notify(f'Created zone {z.name}.')
+        r = Room(zone_id=z.id, name='The First Room')
+        s.add(r)
+        s.commit()
+        character.notify(f'Created room {r}.')
+        character.move(r)
+        character.show_location()
