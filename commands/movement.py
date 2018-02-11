@@ -22,7 +22,7 @@ class Go(Command):
             x.can_use, character=character
         ):
             return  # They cannot pass.
-        character.do_social(x.use_msg, _others=[x])
+        character.do_social(x.use_msg, _others=[x], style=character.walk_style)
         d = Direction.query(name=x.name).first()
         if d is None:
             msg = f'{character.name} arrives.'

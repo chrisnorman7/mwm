@@ -106,7 +106,7 @@ class Exit(Base, NameDescriptionMixin, LocationMixin):
         'Room', backref='entrances', foreign_keys=[target_id]
     )
     use_msg = Column(
-        String(150), nullable=False, default='%1n|normal walk%1s %2n.'
+        String(150), nullable=False, default='%1n|normal {style} %2n.'
     )
     arrive_msg = Column(
         String(150), nullable=False, default='%1n arrives from {direction}.'
