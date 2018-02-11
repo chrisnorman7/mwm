@@ -14,10 +14,14 @@ class Intercept:
     multiline = attrib(default=Factory(bool))
     lines = attrib(default=Factory(list))
     end = attrib(default=Factory(lambda: '.'))
+    abort = attrib(default=Factory(lambda: '@abort'))
     connection = attrib(default=Factory(lambda: None), init=False)
 
     def feed(self, line):
         """Add text to self.text."""
+        if line == self.abort:
+            self.connection.notify('Aborted.')
+            self.connection.intercept = None
         self.lines.append(line)
         if not self.multiline or line == self.end:
             if self.multiline:
