@@ -29,5 +29,5 @@ class Go(Command):
                 x.arrive_msg, [character], direction=d.opposite_string
             )
         x.target.broadcast(msg)
-        character.location = x.target
+        character.move(x.target)
         character.show_location()
