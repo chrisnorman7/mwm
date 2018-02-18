@@ -3,7 +3,7 @@
 import logging
 from twisted.internet import reactor
 import networking
-from util import pluralise, english_list
+from util import pluralise, english_list, format_timedelta
 from .base import Command
 
 logger = logging.getLogger(__name__)
@@ -201,3 +201,15 @@ class Gold(Command):
 
     def func(self, character, args, text):
         character.notify(f'You are carrying {character.gold} gold.')
+
+
+class Uptime(Command):
+    """Shows how long the server has been running."""
+
+    def on_init(self):
+        self.aliases.append('@uptime')
+
+    def func(self, character, args, text):
+        character.notify(
+            f'Server uptime: {format_timedelta(networking.uptime())}.'
+        )

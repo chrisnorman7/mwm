@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from datetime import datetime
 from inspect import isclass
 from sqlalchemy import func
 from twisted.internet.protocol import ServerFactory
@@ -186,3 +187,9 @@ class Factory(ServerFactory):
 
 
 factory = Factory()
+started = datetime.utcnow()
+
+
+def uptime():
+    """Returns how long the server has been running."""
+    return datetime.utcnow() - started
