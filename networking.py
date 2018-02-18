@@ -31,7 +31,19 @@ logger.info('Commands loaded: %d.', len(set(commands_table.values())))
 
 
 class Protocol(LineReceiver):
+
+    @property
+    def connected_time(self):
+        return datetime.utcnow() - self.connected_at
+
+    @property
+    def idle_time(self):
+        return datetime.utcnow() - self.idle_since
+
     def connectionMade(self):
+        now = datetime.utcnow()
+        self.connected_at = now
+        self.idle_since = now
         self.object_id = None
         self.intercept = None
         peer = self.transport.getPeer()
@@ -78,6 +90,7 @@ class Protocol(LineReceiver):
 
     def lineReceived(self, line):
         """A line was received."""
+        self.idle_since = datetime.utcnow()
         line = line.decode(encoding, 'replace')
         with session() as s:
             if self.intercept is not None:
