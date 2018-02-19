@@ -4,6 +4,7 @@ import logging
 from contextlib import contextmanager
 from lupa import LuaRuntime
 import db
+import util
 from permissions import (
     check_privileges, check_builder, check_admin, check_programmer
 )
@@ -14,7 +15,7 @@ lua = LuaRuntime()
 
 lua.globals()['logger'] = logger
 for thing in (
-    db, check_privileges, check_builder, check_admin, check_programmer
+    db, util, check_privileges, check_builder, check_admin, check_programmer
 ):
     lua.globals()[thing.__name__] = thing
 

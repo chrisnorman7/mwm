@@ -1,5 +1,12 @@
 """Utility functions."""
 
+from subprocess import check_output, CalledProcessError
+
+try:
+    __version__ = check_output(['git', 'describe', '--tags']).strip().decode()
+except CalledProcessError:  # Probably not running inside git.
+    __version__ = 'Unknown'
+
 
 def format_timedelta(td):
     """Format timedelta td."""
@@ -59,3 +66,8 @@ def english_list(
                 res += sep
             res += item
         return res
+
+
+def server_version():
+    """Get the server version."""
+    return __version__
