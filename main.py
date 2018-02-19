@@ -9,6 +9,10 @@ from util import server_version
 parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
 parser.add_argument(
+    '-v', '--version', action='version', version=server_version()
+)
+
+parser.add_argument(
     '-c', '--config-file', default='game.yaml',
     help='The configuration file to use'
 )
