@@ -14,7 +14,7 @@ from .session import Session, session
 from .rooms import Room, Direction, Exit, Zone, RoomCommand
 from .guilds import Guild, GuildSecondary
 from .genders import Gender
-from .characters import Character, Race
+from .characters import Character, Race, LoggedCommand
 from .objects import Object
 from .base import Base, MatchError, single_match
 from .skills import WeaponSkill, WeaponSkillSecondary, Spell, SpellSecondary
@@ -26,7 +26,7 @@ __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes', 'Guild', 'GuildSecondary',
     'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
-    'Direction', 'Zone', 'Race', 'RoomCommand', 'MatchError', 'single_match'
+    'Direction', 'Zone', 'Race', 'RoomCommand', 'MatchError', 'single_match', 'LoggedCommand'
 ]
 
 Base.metadata.create_all()
