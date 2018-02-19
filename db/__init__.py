@@ -26,7 +26,8 @@ __all__ = [
     'Room', 'Character', 'Session', 'session', 'Base', 'Exit', 'Object',
     'dump_db', 'load_db', 'get_classes', 'Guild', 'GuildSecondary',
     'WeaponSkill', 'WeaponSkillSecondary', 'Spell', 'SpellSecondary', 'Gender',
-    'Direction', 'Zone', 'Race', 'RoomCommand', 'MatchError', 'single_match', 'LoggedCommand'
+    'Direction', 'Zone', 'Race', 'RoomCommand', 'MatchError', 'single_match',
+    'LoggedCommand'
 ]
 
 Base.metadata.create_all()
