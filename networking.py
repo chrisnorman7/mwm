@@ -55,8 +55,9 @@ class Protocol(LineReceiver):
         """Try and get the proper hostname for this connection."""
         try:
             res = gethostbyaddr(self.host)
-        except gaierror:
-            return  # Do nothing.
+        except gaierror as e:
+            self.logger.warning('Failed to resolve hostname:')
+            return self.logger.exception(e)
         self.host = res[0]
         self.reset_logger()
 
