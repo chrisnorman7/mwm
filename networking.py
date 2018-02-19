@@ -2,9 +2,11 @@
 
 import logging
 import sys
+from socket import gethostbyaddr, gaierror
 from datetime import datetime
 from inspect import isclass
 from sqlalchemy import func
+from twisted.internet import reactor
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 import commands
@@ -45,6 +47,19 @@ class Protocol(LineReceiver):
     def idle_time(self):
         return datetime.utcnow() - self.idle_since
 
+    def reset_logger(self):
+        """Set the logger with an appropriate name."""
+        self.logger = logging.getLogger('%s:%d' % (self.host, self.port))
+
+    def resolve_host(self):
+        """Try and get the proper hostname for this connection."""
+        try:
+            res = gethostbyaddr(self.host)
+        except gaierror:
+            return  # Do nothing.
+        self.host = res[0]
+        self.reset_logger()
+
     def connectionMade(self):
         now = datetime.utcnow()
         self.connected_at = now
@@ -54,7 +69,8 @@ class Protocol(LineReceiver):
         peer = self.transport.getPeer()
         self.host = peer.host
         self.port = peer.port
-        self.logger = logging.getLogger('%s:%d' % (self.host, self.port))
+        reactor.callInThread(self.resolve_host)
+        self.reset_logger()
         self.logger.info('Connected.')
         self.factory.connections.append(self)
         self.username = None
