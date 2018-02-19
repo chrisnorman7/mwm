@@ -97,3 +97,4 @@ ENV/
 *.yaml
 *.sqlite3
 env-client
+commands/__init__.py
