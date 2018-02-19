@@ -327,3 +327,23 @@ class Config(Command):
                 value = getattr(config, name)
             setattr(config, name, value)
             character.notify(f'{name} => {getattr(config, name)}')
+
+
+class Log_Commands(Command):
+    """Toggle command logging for a character."""
+
+    def on_init(self):
+        self.admin = True
+        self.aliases.append('@log-commands')
+        self.add_argument('name', help='The name of the person to modify')
+
+    def func(self, character, args, command):
+        name = args.name
+        who = single_match(name, character.match(name))
+        if not isinstance(who, character.__class__) or who.mobile:
+            self.exit(message=f'{who} is not a character.')
+        who.log_commands = not who.log_commands
+        logger.info(
+            'Command logging turned %s for %s by %s.',
+            'on' if who.log_commands else 'off', who, character
+        )
