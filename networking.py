@@ -27,7 +27,12 @@ for x in dir(commands):
             alias = alias.lower().replace('_', '-')
             logger.debug('%s => %r.', alias, cmd)
             commands_table[alias] = cmd
-logger.info('Commands loaded: %d.', len(set(commands_table.values())))
+n = len(set(commands_table.values()))
+if not n:
+    logger.warning('No commands loaded. Run build-commands.py first.')
+    raise SystemExit
+else:
+    logger.info('Commands loaded: %d.', n)
 
 
 class Protocol(LineReceiver):
@@ -146,6 +151,8 @@ class Protocol(LineReceiver):
             both = line.split(' ', 1)
             if len(both) == 1:
                 both.append('')
+            if self.object is not None and self.object.log_commands:
+                self.object.log_command(line)
             command, rest = both
             if command in commands_table and commands_table[
                 command

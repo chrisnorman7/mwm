@@ -1,11 +1,12 @@
 """Provides the Character class."""
 
-from sqlalchemy import Column, Boolean, Integer, ForeignKey
+from sqlalchemy import Column, Boolean, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import (
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
     LocationMixin, StatisticsMixin, InvisibleMixin, Message
 )
+from .session import Session
 from socials import socials
 from util import english_list
 from programming import as_function
@@ -53,6 +54,7 @@ class Character(
 
     __tablename__ = 'characters'
     resting = Column(Boolean, nullable=False, default=False)
+    log_commands = Column(Boolean, nullable=False, default=False)
     walk_style = Column(Message, nullable=False, default='walk%1s')
     rest_msg = Column(
         Message, nullable=False, default='%1n|normal sit%1s down to rest.'
@@ -222,6 +224,19 @@ class Character(
             level += member.level
         return level
 
+    def log_command(self, command):
+        """Log a command entered by this character."""
+        Session.add(LoggedCommand(command=command, character_id=self.id))
+
 
 for name in ('hitpoints', 'mana', 'endurance'):
     setattr(Character, name[0], StatProperty(name))
+
+
+class LoggedCommand(Base):
+    """A command typed by a character."""
+
+    __tablename__ = 'logged_commands'
+    command = Column(String(10000), nullable=False)
+    character_id = Column(Integer, ForeignKey('characters.id'), nullable=True)
+    character = relationship('Character', backref='logged_commands')
