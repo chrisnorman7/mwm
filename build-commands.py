@@ -45,4 +45,7 @@ if __name__ == '__main__':
         for name in command_names:
             f.write(f"    '{name}',\n")
         f.write(']\n')
-    print(f'Command names written to {commands_dir}\{commands_file}.')
+        print(
+            f'Command names written to {commands_dir}{os.sep}'
+            f'{commands_file}: {len(command_names)}.'
+        )
