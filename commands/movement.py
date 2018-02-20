@@ -13,6 +13,7 @@ class Go(Command):
         self.add_argument('direction', help='The direction to go in.')
 
     def func(self, character, args, rest):
+        character.can_move()
         x = character.location.match_exit(args.direction)
         if x is None:
             self.exit(message='You cannot go that way.')

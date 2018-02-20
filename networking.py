@@ -11,7 +11,7 @@ from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 import commands
 from commands.base import Command
-from db import Character, session, RoomCommand, Room, MatchError, CantMoveError
+from db import Character, session, RoomCommand, Room, MatchError
 from config import config
 from programming import manage_environment
 
@@ -176,8 +176,6 @@ class Protocol(LineReceiver):
             ].allowed(self.object):
                 try:
                     return commands_table[command].run(self.object, rest)
-                except (CantMoveError, MatchError) as e:
-                    self.object.notify(str(e))
                 except Exception as e:
                     return self.object.notify(
                         'Something went wrong with your command.'

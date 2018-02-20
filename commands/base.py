@@ -6,6 +6,7 @@ from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
 from shlex import split
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from db import MatchError, CantMoveError
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,8 @@ class Command(ArgumentParser):
                 self.func(character, args, text)
             except CommandExit:
                 pass  # That's OK.
+            except (CantMoveError, MatchError) as e:
+                character.notify(*e.args)
             except Exception as e:
                 logger.warning('Error in %r:', self)
                 logger.exception(e)
