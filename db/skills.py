@@ -8,6 +8,8 @@ from .base import Base, NameDescriptionMixin, LevelMixin, Message, Code
 
 class SkillMixin:
     max_level = Column(Integer, nullable=False, default=100)
+    before_delay = Column(Integer, nullable=False, default=3)
+    after_delay = Column(Integer, nullable=False, default=3)
 
     @declared_attr
     def characters(cls):
