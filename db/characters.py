@@ -91,7 +91,8 @@ class Character(
     can_move_time = Column(Integer, nullable=True)
 
     def can_move(self):
-        """Check if this character can move or perform other actions yet."""
+        """Check if this character can move or perform other actions yet. If it
+        can't raise a CantMoveError instance."""
         now = int(time())
         if self.can_move_time is None or self.can_move_time < now:
             self.can_move_time = None
