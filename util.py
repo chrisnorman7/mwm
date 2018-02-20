@@ -34,7 +34,7 @@ def format_timedelta(td):
         )
     if seconds:
         fmt.append('%.2f seconds' % seconds)
-    return english_list(fmt)
+    return english_list(fmt, empty='0 seconds')
 
 
 def pluralise(n, singular, plural=None):
