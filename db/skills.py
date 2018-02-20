@@ -1,9 +1,9 @@
 """Provides skil-related classes."""
 
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
-from .base import Base, NameDescriptionMixin, LevelMixin, Message
+from .base import Base, NameDescriptionMixin, LevelMixin, Message, Code
 
 
 class SkillMixin:
@@ -26,7 +26,7 @@ class ActiveSkillMixin(SkillMixin):
         Message, nullable=False, default='%1n|normal use%1s an untitled skill.'
     )
     on_use = Column(
-        String(10000), nullable=False,
+        Code, nullable=False,
         default='character.notify("This skill has not been programmed.")'
     )
 
