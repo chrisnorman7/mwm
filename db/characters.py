@@ -1,5 +1,6 @@
 """Provides the Character class."""
 
+from time import time
 from sqlalchemy import Column, Boolean, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import (
@@ -8,10 +9,14 @@ from .base import (
 )
 from .session import Session
 from socials import socials
-from util import english_list
+from util import english_list, pluralise
 from programming import as_function
 
 connections = {}
+
+
+class CantMoveError(Exception):
+    """A character cannot move for some reason."""
 
 
 class AmbiguousMatchError(Exception):
@@ -83,6 +88,18 @@ class Character(
     hitpoints = Column(Integer, nullable=True)
     mana = Column(Integer, nullable=True)
     endurance = Column(Integer, nullable=True)
+    can_move_time = Column(Integer, nullable=True)
+
+    def can_move(self):
+        """Check if this character can move or perform other actions yet."""
+        now = int(time())
+        if self.can_move_time is None or self.can_move_time < now:
+            self.can_move_time = None
+        else:
+            duration = self.can_move_time - now
+            raise CantMoveError(
+                f'Wait {duration} {pluralise(duration, "second")}.'
+            )
 
     def move(self, where):
         """Used to move a character, calls appropriate events on old and new
