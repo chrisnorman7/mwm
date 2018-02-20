@@ -2,7 +2,7 @@
 
 import logging
 import sys
-from socket import gethostbyaddr, gaierror
+from socket import gethostbyaddr, error
 from datetime import datetime
 from inspect import isclass
 from sqlalchemy import func
@@ -55,7 +55,7 @@ class Protocol(LineReceiver):
         """Try and get the proper hostname for this connection."""
         try:
             res = gethostbyaddr(self.host)
-        except gaierror as e:
+        except error as e:
             self.logger.warning('Failed to resolve hostname:')
             return self.logger.exception(e)
         self.host = res[0]
