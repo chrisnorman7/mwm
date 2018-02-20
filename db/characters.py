@@ -1,6 +1,7 @@
 """Provides the Character class."""
 
 from time import time
+from datetime import timedelta
 from sqlalchemy import Column, Boolean, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import (
@@ -9,7 +10,7 @@ from .base import (
 )
 from .session import Session
 from socials import socials
-from util import english_list, pluralise
+from util import english_list, format_timedelta
 from programming import as_function
 
 connections = {}
@@ -97,10 +98,8 @@ class Character(
         if self.can_move_time is None or self.can_move_time < now:
             self.can_move_time = None
         else:
-            duration = self.can_move_time - now
-            raise CantMoveError(
-                f'Wait {duration} {pluralise(duration, "second")}.'
-            )
+            duration = timedelta(seconds=self.can_move_time - now)
+            raise CantMoveError(f'Wait {format_timedelta(duration)}.')
 
     def move(self, where):
         """Used to move a character, calls appropriate events on old and new
