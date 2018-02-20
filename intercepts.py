@@ -15,7 +15,7 @@ class Intercept:
     lines = attrib(default=Factory(list))
     end = attrib(default=Factory(lambda: '.'))
     abort = attrib(default=Factory(lambda: '@abort'))
-    connection = attrib(default=Factory(lambda: None), init=False)
+    connection = attrib(default=Factory(lambda: None))
 
     def feed(self, line):
         """Add text to self.text."""

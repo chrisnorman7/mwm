@@ -2,6 +2,13 @@ from pytest import raises
 from intercepts import Intercept
 
 
+class TestConnection:
+    """Stop AttributeError from happening."""
+
+
+con = TestConnection()
+
+
 class Done(Exception):
     """Test passes."""
 
@@ -25,13 +32,13 @@ def done_args(text, first, second, hello=None):
 
 
 def test_single_line():
-    i = Intercept(done_single_line)
+    i = Intercept(done_single_line, connection=con)
     with raises(Done):
         i.feed('testing')
 
 
 def test_multi_line():
-    i = Intercept(done_multi_line, multiline=True)
+    i = Intercept(done_multi_line, multiline=True, connection=con)
     i.feed('hello')
     i.feed('world')
     with raises(Done):
@@ -39,6 +46,8 @@ def test_multi_line():
 
 
 def test_args():
-    i = Intercept(done_args, args=(1, 2), kwargs=dict(hello='world'))
+    i = Intercept(
+        done_args, args=(1, 2), kwargs=dict(hello='world'), connection=con
+    )
     with raises(Done):
         i.feed('test')
