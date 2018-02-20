@@ -2,7 +2,7 @@
 
 from time import time
 from datetime import timedelta
-from sqlalchemy import Column, Boolean, String, Integer, ForeignKey
+from sqlalchemy import Column, Boolean, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from .base import (
     Base, NameDescriptionMixin, PasswordMixin, ExperienceMixin, LevelMixin,
@@ -89,12 +89,12 @@ class Character(
     hitpoints = Column(Integer, nullable=True)
     mana = Column(Integer, nullable=True)
     endurance = Column(Integer, nullable=True)
-    can_move_time = Column(Integer, nullable=True)
+    can_move_time = Column(Float, nullable=True)
 
     def can_move(self):
         """Check if this character can move or perform other actions yet. If it
         can't raise a CantMoveError instance."""
-        now = int(time())
+        now = time()
         if self.can_move_time is None or self.can_move_time < now:
             self.can_move_time = None
         else:
